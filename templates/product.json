@@ -130,6 +130,17 @@
                   },
                   "blocks": {}
                 },
+                "review_dreamzhub": {
+                  "type": "review",
+                  "settings": {
+                    "stars_style": "shaded",
+                    "show_number": true,
+                    "rating_color": "primary",
+                    "type_preset": "paragraph",
+                    "width": "100%",
+                    "alignment": "left"
+                  }
+                },
                 "price_tVjtKg": {
                   "type": "price",
                   "settings": {
@@ -140,7 +151,7 @@
                     "width": "100%",
                     "alignment": "left",
                     "font": "var(--font-body--family)",
-                    "font_size": "1rem",
+                    "font_size": "1.2rem",
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -155,6 +166,7 @@
               },
               "block_order": [
                 "text_xrnftG",
+                "review_dreamzhub",
                 "price_tVjtKg"
               ]
             },
