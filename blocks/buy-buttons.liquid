@@ -341,35 +341,200 @@
 
               var buyNowBtn = document.getElementById('dreamzhub-buy-now-trigger');
               if (buyNowBtn) {
+                // BUY NOW → instant checkout (no popup)
                 buyNowBtn.addEventListener('click', instantCheckout);
               }
 
               var codBtn = document.getElementById('dreamzhub-cod-trigger');
               if (codBtn) {
-                codBtn.addEventListener('click', instantCheckout);
+                // COD → open address popup
+                codBtn.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  var modal = document.getElementById('dz-cod-modal');
+                  if (modal) modal.style.display = 'flex';
+                  document.body.style.overflow = 'hidden';
+                });
               }
 
               // Simple toggle for the Buy 1 Get 1 vs Buy 2 Get 2 promo badges
-              const badges = document.querySelectorAll('.dreamzhub-promo-badges .dreamzhub-badge');
-              badges.forEach(badge => {
+              var badges = document.querySelectorAll('.dreamzhub-promo-badges .dreamzhub-badge');
+              badges.forEach(function(badge) {
                 badge.addEventListener('click', function() {
-                  badges.forEach(b => b.classList.remove('badge-active'));
+                  badges.forEach(function(b) { b.classList.remove('badge-active'); });
                   this.classList.add('badge-active');
-                  
-                  // Update variant selection or quantity selector if desired
-                  const qtyInput = document.querySelector('quantity-selector-component input');
+                  var qtyInput = document.querySelector('quantity-selector-component input');
                   if (qtyInput) {
-                    if (this.textContent.includes('Buy 2')) {
-                      qtyInput.value = 2;
-                    } else {
-                      qtyInput.value = 1;
-                    }
+                    qtyInput.value = this.textContent.includes('Buy 2') ? 2 : 1;
                     qtyInput.dispatchEvent(new Event('change', { bubbles: true }));
                   }
                 });
               });
             })();
           </script>
+
+          <!-- COD Order Popup Modal -->
+          <div id="dz-cod-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(5px);z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;">
+            <div style="background:#f6fafd;border-radius:20px;width:100%;max-width:480px;box-shadow:0 25px 60px rgba(0,0,0,0.3);overflow:hidden;position:relative;max-height:90vh;overflow-y:auto;">
+              <!-- Header -->
+              <div style="background:#fff;padding:14px 20px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:2;">
+                <span style="color:#dc2626;font-weight:800;font-size:13px;">🔥 Limited Stock! Last day of sale!</span>
+                <button id="dz-cod-modal-close" style="background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;padding:0 4px;">&times;</button>
+              </div>
+              <!-- Form -->
+              <form id="dz-cod-form" style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+                <!-- Name -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">Name <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <span style="padding:10px 12px;background:#f3f4f6;border-right:1px solid #e5e7eb;font-size:15px;">👤</span>
+                    <input required name="cod_name" type="text" placeholder="First & Last Name" style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;">
+                  </div>
+                </div>
+                <!-- Phone -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">Phone <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <span style="padding:10px 12px;background:#f3f4f6;border-right:1px solid #e5e7eb;font-size:15px;">📞</span>
+                    <input required name="cod_phone" type="tel" placeholder="+91 XXXXX XXXXX" pattern="[0-9]{10,12}" style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;">
+                  </div>
+                </div>
+                <!-- Address -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">Address <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <span style="padding:10px 12px;background:#f3f4f6;border-right:1px solid #e5e7eb;font-size:15px;">📍</span>
+                    <input required name="cod_address" type="text" placeholder="House No / Flat No / Street" style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;">
+                  </div>
+                </div>
+                <!-- Landmark -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">Landmark <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <span style="padding:10px 12px;background:#f3f4f6;border-right:1px solid #e5e7eb;font-size:15px;">🏛️</span>
+                    <input required name="cod_landmark" type="text" placeholder="Nearby temple, hotel, etc." style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;">
+                  </div>
+                </div>
+                <!-- PIN -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">PIN Code <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <span style="padding:10px 12px;background:#f3f4f6;border-right:1px solid #e5e7eb;font-size:15px;">#</span>
+                    <input required name="cod_pin" type="text" placeholder="6-digit PIN code" maxlength="6" pattern="[0-9]{6}" style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;">
+                  </div>
+                </div>
+                <!-- City -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">City <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <span style="padding:10px 12px;background:#f3f4f6;border-right:1px solid #e5e7eb;font-size:15px;">🏙️</span>
+                    <input required name="cod_city" type="text" placeholder="City" style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;">
+                  </div>
+                </div>
+                <!-- State -->
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <label style="width:90px;font-size:13px;font-weight:700;color:#1a1a1a;flex-shrink:0;">State <span style="color:red">*</span></label>
+                  <div style="flex:1;display:flex;border:1.5px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;">
+                    <select required name="cod_state" style="flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;background:transparent;appearance:auto;">
+                      <option value="">-- Select State --</option>
+                      <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option>
+                      <option>Bihar</option><option>Chhattisgarh</option><option>Goa</option>
+                      <option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option>
+                      <option>Jharkhand</option><option>Karnataka</option><option>Kerala</option>
+                      <option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option>
+                      <option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option>
+                      <option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+                      <option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option>
+                      <option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option>
+                      <option>West Bengal</option><option>Delhi</option><option>Jammu and Kashmir</option>
+                      <option>Ladakh</option><option>Chandigarh</option><option>Puducherry</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Submit -->
+                <button type="submit" id="dz-cod-submit" style="width:100%;background:#2C6769;color:#fff;font-weight:800;font-size:14px;padding:16px;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:0.5px;margin-top:4px;transition:background 0.2s;">
+                  🛒 &nbsp;CONFIRM YOUR ORDER — CASH ON DELIVERY
+                </button>
+                <p style="text-align:center;font-size:11px;color:#6b7280;margin:0;">🔒 Secure & 100% Safe &nbsp;|&nbsp; Free Delivery All India &nbsp;|&nbsp; Pay on delivery</p>
+              </form>
+            </div>
+          </div>
+
+          <script>
+            (function() {
+              // Close modal
+              var closeBtn = document.getElementById('dz-cod-modal-close');
+              var modal = document.getElementById('dz-cod-modal');
+              if (closeBtn && modal) {
+                closeBtn.addEventListener('click', function() {
+                  modal.style.display = 'none';
+                  document.body.style.overflow = '';
+                });
+                modal.addEventListener('click', function(e) {
+                  if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                  }
+                });
+              }
+
+              // COD Form Submit → add to cart + save address as note + go to checkout
+              var codForm = document.getElementById('dz-cod-form');
+              var submitBtn = document.getElementById('dz-cod-submit');
+              if (codForm) {
+                codForm.addEventListener('submit', function(e) {
+                  e.preventDefault();
+                  var data = new FormData(codForm);
+                  var name    = data.get('cod_name');
+                  var phone   = data.get('cod_phone');
+                  var address = data.get('cod_address');
+                  var landmark= data.get('cod_landmark');
+                  var pin     = data.get('cod_pin');
+                  var city    = data.get('cod_city');
+                  var state   = data.get('cod_state');
+
+                  // Show processing
+                  submitBtn.innerHTML = '⏳ &nbsp;Confirming Order...';
+                  submitBtn.style.opacity = '0.8';
+                  submitBtn.disabled = true;
+
+                  var variantId = document.querySelector('input[name="id"][ref="variantId"]')
+                                || document.querySelector('input[name="id"]');
+                  var vid = variantId ? variantId.value : '{{ product.selected_or_first_available_variant.id }}';
+                  var qtyInput = document.querySelector('quantity-selector-component input')
+                               || document.querySelector('input[name="quantity"]');
+                  var qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+
+                  // Build cart note with customer details
+                  var noteText = 'COD ORDER\nName: ' + name + '\nPhone: ' + phone +
+                    '\nAddress: ' + address + ', ' + landmark +
+                    '\nCity: ' + city + '\nPIN: ' + pin + '\nState: ' + state;
+
+                  // First update cart note, then add item + redirect to checkout
+                  fetch('/cart/update.js', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note: noteText })
+                  }).finally(function() {
+                    // Now add to cart and redirect via form POST
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/cart/add';
+                    [['id', vid], ['quantity', qty], ['return_to', '/checkout']].forEach(function(pair) {
+                      var inp = document.createElement('input');
+                      inp.type = 'hidden';
+                      inp.name = pair[0];
+                      inp.value = pair[1];
+                      form.appendChild(inp);
+                    });
+                    document.body.appendChild(form);
+                    form.submit();
+                  });
+                });
+              }
+            })();
+          </script>
+
         </div>
         {%- if block_settings.gift_card_form and product.gift_card? -%}
           </span>
