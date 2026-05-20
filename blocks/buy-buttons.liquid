@@ -271,43 +271,82 @@
 
           <script>
             (function() {
-              function redirectToShopifyCheckout(e) {
+              // Preconnect to checkout early for faster redirect
+              var preconnect = document.createElement('link');
+              preconnect.rel = 'preconnect';
+              preconnect.href = 'https://kda-7678.myshopify.com';
+              document.head.appendChild(preconnect);
+
+              // Loading overlay — shows instantly on click for smooth UX
+              var overlay = document.createElement('div');
+              overlay.id = 'dz-loading-overlay';
+              overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px"><div style="width:44px;height:44px;border:4px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:dz-spin 0.7s linear infinite"></div><span style="color:#fff;font-weight:700;font-size:15px;letter-spacing:0.5px">Processing...</span></div>';
+              overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:99999;align-items:center;justify-content:center;';
+              var style = document.createElement('style');
+              style.textContent = '@keyframes dz-spin{to{transform:rotate(360deg)}}';
+              document.head.appendChild(style);
+              document.body.appendChild(overlay);
+
+              function showOverlay(msg) {
+                overlay.querySelector('span').textContent = msg || 'Processing...';
+                overlay.style.display = 'flex';
+              }
+
+              function instantCheckout(e) {
                 e.preventDefault();
-                const btn = e.currentTarget;
-                const form = btn.closest('form') || document.querySelector('form[action*="/cart/add"]');
+                e.stopPropagation();
+
+                var btn = e.currentTarget;
+                var isCod = btn.id === 'dreamzhub-cod-trigger';
                 
-                if (form) {
-                  // Show processing state
-                  const originalText = btn.innerHTML;
-                  btn.style.opacity = '0.7';
-                  
-                  const formData = new FormData(form);
-                  
-                  fetch(window.Shopify.routes.root + 'cart/add.js', {
-                    method: 'POST',
-                    body: formData
-                  })
-                  .then(response => {
-                    // Redirect directly to Shopify's native checkout (Address details page)
-                    window.location.href = '/checkout';
-                  })
-                  .catch(error => {
-                    console.error('Error adding to cart:', error);
-                    window.location.href = '/checkout';
-                  });
-                } else {
-                  window.location.href = '/checkout';
-                }
+                showOverlay(isCod ? 'Confirming COD Order...' : 'Redirecting to Payment...');
+
+                // Get variant ID from the hidden input
+                var variantId = document.querySelector('input[name="id"][ref="variantId"]') 
+                              || document.querySelector('input[name="id"]');
+                var vid = variantId ? variantId.value : '{{ product.selected_or_first_available_variant.id }}';
+
+                // Get quantity
+                var qtyInput = document.querySelector('quantity-selector-component input') 
+                             || document.querySelector('input[name="quantity"]');
+                var qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+
+                // Build a hidden form and submit directly — NO fetch round trip, instant redirect!
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/cart/add';
+
+                var idField = document.createElement('input');
+                idField.type = 'hidden';
+                idField.name = 'id';
+                idField.value = vid;
+                form.appendChild(idField);
+
+                var qtyField = document.createElement('input');
+                qtyField.type = 'hidden';
+                qtyField.name = 'quantity';
+                qtyField.value = qty;
+                form.appendChild(qtyField);
+
+                // return_to=/checkout makes Shopify redirect straight to checkout after adding
+                var returnField = document.createElement('input');
+                returnField.type = 'hidden';
+                returnField.name = 'return_to';
+                returnField.value = '/checkout';
+                form.appendChild(returnField);
+
+                document.body.appendChild(form);
+                form.submit();
               }
 
-              const buyNowBtn = document.getElementById('dreamzhub-buy-now-trigger');
+              var buyNowBtn = document.getElementById('dreamzhub-buy-now-trigger');
               if (buyNowBtn) {
-                buyNowBtn.addEventListener('click', redirectToShopifyCheckout);
+                buyNowBtn.addEventListener('click', instantCheckout);
               }
 
-              const codBtn = document.getElementById('dreamzhub-cod-trigger');
+              var codBtn = document.getElementById('dreamzhub-cod-trigger');
               if (codBtn) {
-                codBtn.addEventListener('click', redirectToShopifyCheckout);
+                codBtn.addEventListener('click', instantCheckout);
               }
 
               // Simple toggle for the Buy 1 Get 1 vs Buy 2 Get 2 promo badges
