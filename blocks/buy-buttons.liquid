@@ -276,16 +276,30 @@
                 buyNowBtn.addEventListener('click', function(e) {
                   e.preventDefault();
                   
-                  // Attach a one-time listener for the cart:add custom event to redirect to checkout
-                  document.addEventListener('cart:add', function() {
-                    window.location.href = '/checkout';
-                  }, { once: true });
+                  // Get variant price and quantity selected
+                  const price = {{ variant.price | divided_by: 100.0 }};
+                  const qtyInput = document.querySelector('quantity-selector-component input') || document.querySelector('input[name="quantity"]');
+                  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                  const totalPrice = price * quantity;
                   
-                  // Submit parent form
-                  const form = buyNowBtn.closest('form');
-                  if (form) {
-                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                  }
+                  // Redirect directly to the React app's details filling page (address page)
+                  window.location.href = '/address?totalPrice=' + totalPrice + '&paymentType=online';
+                });
+              }
+
+              const codBtn = document.getElementById('dreamzhub-cod-trigger');
+              if (codBtn) {
+                codBtn.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  
+                  // Get variant price and quantity selected
+                  const price = {{ variant.price | divided_by: 100.0 }};
+                  const qtyInput = document.querySelector('quantity-selector-component input') || document.querySelector('input[name="quantity"]');
+                  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                  const totalPrice = price * quantity;
+                  
+                  // Redirect directly to the React app's details filling page (address page)
+                  window.location.href = '/address?totalPrice=' + totalPrice + '&paymentType=cod';
                 });
               }
 
