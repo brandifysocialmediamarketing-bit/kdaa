@@ -271,36 +271,43 @@
 
           <script>
             (function() {
+              function redirectToShopifyCheckout(e) {
+                e.preventDefault();
+                const btn = e.currentTarget;
+                const form = btn.closest('form') || document.querySelector('form[action*="/cart/add"]');
+                
+                if (form) {
+                  // Show processing state
+                  const originalText = btn.innerHTML;
+                  btn.style.opacity = '0.7';
+                  
+                  const formData = new FormData(form);
+                  
+                  fetch(window.Shopify.routes.root + 'cart/add.js', {
+                    method: 'POST',
+                    body: formData
+                  })
+                  .then(response => {
+                    // Redirect directly to Shopify's native checkout (Address details page)
+                    window.location.href = '/checkout';
+                  })
+                  .catch(error => {
+                    console.error('Error adding to cart:', error);
+                    window.location.href = '/checkout';
+                  });
+                } else {
+                  window.location.href = '/checkout';
+                }
+              }
+
               const buyNowBtn = document.getElementById('dreamzhub-buy-now-trigger');
               if (buyNowBtn) {
-                buyNowBtn.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  
-                  // Get variant price and quantity selected
-                  const price = {{ variant.price | divided_by: 100.0 }};
-                  const qtyInput = document.querySelector('quantity-selector-component input') || document.querySelector('input[name="quantity"]');
-                  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                  const totalPrice = price * quantity;
-                  
-                  // Redirect directly to the React app's details filling page (address page)
-                  window.location.href = '/address?totalPrice=' + totalPrice + '&paymentType=online';
-                });
+                buyNowBtn.addEventListener('click', redirectToShopifyCheckout);
               }
 
               const codBtn = document.getElementById('dreamzhub-cod-trigger');
               if (codBtn) {
-                codBtn.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  
-                  // Get variant price and quantity selected
-                  const price = {{ variant.price | divided_by: 100.0 }};
-                  const qtyInput = document.querySelector('quantity-selector-component input') || document.querySelector('input[name="quantity"]');
-                  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                  const totalPrice = price * quantity;
-                  
-                  // Redirect directly to the React app's details filling page (address page)
-                  window.location.href = '/address?totalPrice=' + totalPrice + '&paymentType=cod';
-                });
+                codBtn.addEventListener('click', redirectToShopifyCheckout);
               }
 
               // Simple toggle for the Buy 1 Get 1 vs Buy 2 Get 2 promo badges
