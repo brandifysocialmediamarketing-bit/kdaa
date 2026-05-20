@@ -36,13 +36,15 @@
   }
 </script>
 
+{%- comment -%}
+  Performance: view-transitions is non-critical, load it async only.
+  Removed blocking="render" to prevent it from delaying first paint.
+{%- endcomment -%}
 <script
   src="{{ 'view-transitions.js' | asset_url }}"
   async
-  {% if settings.page_transition_enabled or settings.transition_to_main_product %}
-    blocking="render"
-  {% endif %}
-></script>
+>
+</script>
 
 <link
   rel="modulepreload"
@@ -273,10 +275,39 @@
   </script>
 {% endif %}
 
-<script
-  src="{{ 'auto-close-details.js' | asset_url }}"
-  defer="defer"
-></script>
+<script src="{{ 'auto-close-details.js' | asset_url }}" defer></script>
+
+<script>
+  {%- comment -%} Performance: Load heavy non-critical scripts after page is idle {%- endcomment -%}
+  (function() {
+    var heavyScripts = [
+      {{ 'slideshow.js' | asset_url | json }},
+      {{ 'layered-slideshow.js' | asset_url | json }},
+      {{ 'localization.js' | asset_url | json }},
+      {{ 'quick-order-list.js' | asset_url | json }},
+      {{ 'product-recommendations.js' | asset_url | json }},
+      {{ 'gift-card-recipient-form.js' | asset_url | json }},
+      {{ 'drag-zoom-wrapper.js' | asset_url | json }},
+      {{ 'zoom-dialog.js' | asset_url | json }},
+      {{ 'marquee.js' | asset_url | json }},
+      {{ 'jumbo-text.js' | asset_url | json }}
+    ];
+    function loadHeavyScripts() {
+      heavyScripts.forEach(function(src) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.type = 'module';
+        s.fetchPriority = 'low';
+        document.body.appendChild(s);
+      });
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadHeavyScripts, { timeout: 3000 });
+    } else {
+      setTimeout(loadHeavyScripts, 2000);
+    }
+  })();
+</script>
 
 <script>
   const Theme = {
