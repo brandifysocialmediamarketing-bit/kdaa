@@ -1,0 +1,140 @@
+<div class="pw-faq premium-wellness-section">
+  <div class="pw-faq__container">
+    {%- if section.settings.title != blank or section.settings.description != blank -%}
+      <div class="pw-faq__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="pw-faq__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="pw-faq__desc">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="pw-faq__list" id="faq-list-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        <div class="pw-faq__item" {{ block.shopify_attributes }}>
+          <button class="pw-faq__question-btn" aria-expanded="false" aria-controls="faq-answer-{{ block.id }}">
+            <span>{{ block.settings.question }}</span>
+            <svg class="pw-faq__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="pw-faq__answer" id="faq-answer-{{ block.id }}" role="region">
+            <div class="pw-faq__answer-content">
+              {{ block.settings.answer }}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const faqList = document.getElementById('faq-list-{{ section.id }}');
+    if (!faqList) return;
+
+    const items = faqList.querySelectorAll('.pw-faq__item');
+    items.forEach(function(item) {
+      const button = item.querySelector('.pw-faq__question-btn');
+      const answer = item.querySelector('.pw-faq__answer');
+
+      button.addEventListener('click', function() {
+        const isOpen = item.classList.contains('pw-faq__item--open');
+
+        // Close other items
+        items.forEach(function(otherItem) {
+          if (otherItem !== item) {
+            otherItem.classList.remove('pw-faq__item--open');
+            otherItem.querySelector('.pw-faq__question-btn').setAttribute('aria-expanded', 'false');
+            otherItem.querySelector('.pw-faq__answer').style.maxHeight = null;
+          }
+        });
+
+        // Toggle current item
+        if (isOpen) {
+          item.classList.remove('pw-faq__item--open');
+          button.setAttribute('aria-expanded', 'false');
+          answer.style.maxHeight = null;
+        } else {
+          item.classList.add('pw-faq__item--open');
+          button.setAttribute('aria-expanded', 'true');
+          // Set max-height programmatically for a smooth transition
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom FAQ Accordion",
+  "tag": "section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Have questions about our relief formulas? Find answers to commonly asked questions below."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How fast will I feel relief?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "Most customers report feeling localized cooling/warming sensations within 5-10 minutes of application, with deep joint relief manifesting in 1-2 days of consistent use."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom FAQ Accordion",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is it safe to use daily?",
+            "answer": "Yes, our ointments are formulated with 100% organic botanicals and contain no synthetic chemicals, making them completely safe for long-term daily use."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Does it have a strong chemical smell?",
+            "answer": "Not at all. Our formulas carry a very mild, pleasant herbal aroma that dissipates clean within 15 minutes of application."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use it alongside oral pain medications?",
+            "answer": "Our treatments are topical and act locally. Since they don't enter the bloodstream like oral meds, they are safe to use in tandem, but consult your physician if you have specific concerns."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

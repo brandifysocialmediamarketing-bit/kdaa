@@ -1,232 +1,189 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "product_list_themegen": {
-      "type": "product-list",
-      "disabled": false,
+    "custom_hero": {
+      "type": "custom-hero",
+      "settings": {
+        "tagline": "Premium Wellness",
+        "title": "Advanced Relief For Everyday Comfort",
+        "description": "Premium wellness solutions designed to support comfort, recovery, and everyday care.",
+        "btn_1_label": "Shop Now",
+        "btn_1_link": "shopify://collections/all",
+        "btn_2_label": "Learn More",
+        "btn_2_link": "shopify://pages/about-us"
+      }
+    },
+    "custom_trust_benefits": {
+      "type": "custom-trust-benefits",
+      "settings": {
+        "title_1": "Secure Checkout",
+        "desc_1": "SSL encrypted transactions",
+        "title_2": "Premium Quality",
+        "desc_2": "Clinically proven formulas",
+        "title_3": "Easy To Use",
+        "desc_3": "Non-greasy, fast absorption",
+        "title_4": "Customer Support",
+        "desc_4": "24/7 dedicated support"
+      }
+    },
+    "custom_featured_products": {
+      "type": "custom-featured-products",
+      "settings": {
+        "title": "Best Selling Pain Relief Formulas",
+        "description": "Explore our targeted solutions clinically formulated to bring fast-acting, lasting relief from pain and stiffness.",
+        "collection": "all",
+        "max_products": 4,
+        "columns": 4
+      }
+    },
+    "custom_why_choose_us": {
+      "type": "custom-why-choose-us",
+      "settings": {
+        "title": "Why Doctors Recommend Us",
+        "description": "Formulated with medical integrity and natural scientific potency to bring relief that is rapid, targeted, and completely safe."
+      },
       "blocks": {
-        "static-header": {
-          "type": "_product-list-content",
-          "name": "t:names.header",
-          "static": true,
+        "block_1": {
+          "type": "feature",
           "settings": {
-            "content_direction": "row",
-            "vertical_on_mobile": false,
-            "horizontal_alignment": "space-between",
-            "vertical_alignment": "flex-end",
-            "align_baseline": true,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "background_media": "none",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_list_text_mhPRMB": {
-              "type": "_product-list-text",
-              "name": "t:names.collection_title",
-              "settings": {
-                "text": "<h3>Featured Products</h3>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h4",
-                "font": "var(--font-primary--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_list_text_mhPRMB"
-          ]
+            "icon": "medical",
+            "title": "Physician-Formulated",
+            "description": "Our formulas are created by board-certified orthopedic specialists to guarantee high clinical efficacy."
+          }
         },
-        "static-product-card": {
-          "type": "_product-card",
-          "name": "t:names.product_card",
-          "static": true,
+        "block_2": {
+          "type": "feature",
           "settings": {
-            "product_card_gap": 16,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_card_gallery_G7ztgU": {
-              "type": "_product-card-gallery",
-              "name": "t:names.product_card_media",
-              "settings": {
-                "image_ratio": "portrait",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 8,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "group_VJHATU": {
-              "type": "_product-card-group",
-              "name": "t:names.group",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 4,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "inherit_color_scheme": true,
-                "color_scheme": "",
-                "background_media": "none",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "text_QWWh8B": {
-                  "type": "text",
-                  "name": "t:names.text",
-                  "settings": {
-                    "text": "<h4>{{ closest.product.title }}</h4>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "h5",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1.125rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                },
-                "price_x8Yaik": {
-                  "type": "price",
-                  "name": "t:names.product_price",
-                  "settings": {
-                    "show_sale_price_first": true,
-                    "show_installments": false,
-                    "show_tax_info": false,
-                    "type_preset": "paragraph",
-                    "width": "fit-content",
-                    "alignment": "center",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "color": "var(--color-foreground)",
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_QWWh8B",
-                "price_x8Yaik"
-              ]
-            }
-          },
-          "block_order": [
-            "product_card_gallery_G7ztgU",
-            "group_VJHATU"
-          ]
+            "icon": "shield",
+            "title": "Clinically Proven",
+            "description": "Rigorous double-blind clinical studies prove our active compounds resolve local swelling and pain."
+          }
+        },
+        "block_3": {
+          "type": "feature",
+          "settings": {
+            "icon": "leaf",
+            "title": "100% Organic Extracts",
+            "description": "Zero chemical binders or artificial synthetic irritants. Just clean, pure botanical nutrients."
+          }
         }
       },
-      "name": "Featured Products Grid",
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3"
+      ]
+    },
+    "custom_reviews": {
+      "type": "custom-reviews",
       "settings": {
-        "collection": "all",
-        "layout_type": "grid",
-        "carousel_on_mobile": false,
-        "max_products": 8,
-        "columns": 4,
-        "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
-        "columns_gap": 36,
-        "rows_gap": 36,
-        "icons_style": "arrow",
-        "icons_shape": "none",
-        "section_width": "page-width",
-        "horizontal_alignment": "flex-start",
-        "gap": 30,
-        "color_scheme": "scheme-1",
-        "padding-block-start": 50,
-        "padding-block-end": 50
+        "title": "Loved by 10,000+ Happy Customers",
+        "description": "See how our premium pain-relief solutions are helping real people reclaim their active lives."
+      },
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "stars": "5",
+            "content": "This pain-relief ointment works like magic. It is non-greasy, absorbs immediately, and blocks the throbbing back pain in minutes.",
+            "author": "Aarav S.",
+            "verified": true
+          }
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "stars": "5",
+            "content": "I recommend these wellness formulas to my patients. Excellent clinical profile and highly bioavailable ingredients.",
+            "author": "Dr. Priya M.",
+            "verified": true
+          }
+        },
+        "review_3": {
+          "type": "review",
+          "settings": {
+            "stars": "5",
+            "content": "Fantastic product! I use it after workouts to prevent muscle cramps and stiffness. Very fast shipping too.",
+            "author": "Vikram J.",
+            "verified": true
+          }
+        }
+      },
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3"
+      ]
+    },
+    "custom_faq": {
+      "type": "custom-faq",
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "description": "Have questions about our relief formulas? Find answers to commonly asked questions below."
+      },
+      "blocks": {
+        "faq_1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How fast will I feel relief?",
+            "answer": "Most customers report feeling localized cooling/warming sensations within 5-10 minutes of application, with deep joint relief manifesting in 1-2 days of consistent use."
+          }
+        },
+        "faq_2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is it safe to use daily?",
+            "answer": "Yes, our ointments are formulated with 100% organic botanicals and contain no synthetic chemicals, making them completely safe for long-term daily use."
+          }
+        },
+        "faq_3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Does it have a strong chemical smell?",
+            "answer": "Not at all. Our formulas carry a very mild, pleasant herbal aroma that dissipates clean within 15 minutes of application."
+          }
+        },
+        "faq_4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use it alongside oral pain medications?",
+            "answer": "Our treatments are topical and act locally. Since they don't enter the bloodstream like oral meds, they are safe to use in tandem, but consult your physician if you have specific concerns."
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4"
+      ]
+    },
+    "custom_newsletter": {
+      "type": "custom-newsletter",
+      "settings": {
+        "title": "Join Our Wellness Community",
+        "description": "Subscribe to receive exclusive pain-relief tips, clinical studies, and early access to new formulas.",
+        "placeholder": "Enter your email",
+        "button_label": "Subscribe",
+        "success_message": "Thank you! You have successfully subscribed."
       }
     }
   },
   "order": [
-    "product_list_themegen"
+    "custom_hero",
+    "custom_trust_benefits",
+    "custom_featured_products",
+    "custom_why_choose_us",
+    "custom_reviews",
+    "custom_faq",
+    "custom_newsletter"
   ]
 }

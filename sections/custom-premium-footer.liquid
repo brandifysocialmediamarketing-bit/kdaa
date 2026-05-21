@@ -1,0 +1,350 @@
+<div class="cpf-footer" id="cpf-footer-{{ section.id }}">
+
+  {%- comment -%} ── MAIN FOOTER GRID ── {%- endcomment -%}
+  <div class="cpf-main">
+    <div class="cpf-container">
+      <div class="cpf-grid">
+
+        {%- comment -%} COL 1 – Brand {%- endcomment -%}
+        <div class="cpf-col cpf-brand">
+          {%- if section.settings.logo != blank -%}
+            <a href="{{ routes.root_url }}" class="cpf-brand__logo-link" aria-label="{{ shop.name }}">
+              <img src="{{ section.settings.logo | image_url: width: 160 }}"
+                   alt="{{ shop.name }}"
+                   width="160" height="auto"
+                   class="cpf-brand__logo"
+                   loading="lazy">
+            </a>
+          {%- else -%}
+            <a href="{{ routes.root_url }}" class="cpf-brand__name" aria-label="{{ shop.name }}">
+              {{ shop.name }}
+            </a>
+          {%- endif -%}
+
+          {%- if section.settings.brand_desc != blank -%}
+            <p class="cpf-brand__desc">{{ section.settings.brand_desc }}</p>
+          {%- endif -%}
+
+          <div class="cpf-social" aria-label="Social media links">
+            {%- if section.settings.social_instagram != blank -%}
+              <a href="{{ section.settings.social_instagram }}" class="cpf-social__link" target="_blank" rel="noopener" aria-label="Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+            {%- endif -%}
+            {%- if section.settings.social_facebook != blank -%}
+              <a href="{{ section.settings.social_facebook }}" class="cpf-social__link" target="_blank" rel="noopener" aria-label="Facebook">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+            {%- endif -%}
+            {%- if section.settings.social_whatsapp != blank -%}
+              <a href="https://wa.me/{{ section.settings.social_whatsapp | remove: '+' | remove: ' ' }}" class="cpf-social__link" target="_blank" rel="noopener" aria-label="WhatsApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </a>
+            {%- endif -%}
+            {%- if section.settings.social_youtube != blank -%}
+              <a href="{{ section.settings.social_youtube }}" class="cpf-social__link" target="_blank" rel="noopener" aria-label="YouTube">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} COL 2 – Quick Links {%- endcomment -%}
+        <div class="cpf-col">
+          <h3 class="cpf-col__heading">{{ section.settings.links_heading }}</h3>
+          <nav aria-label="Quick links">
+            <ul class="cpf-nav-list">
+              {%- if section.settings.links_menu != blank -%}
+                {%- assign footer_menu = linklists[section.settings.links_menu] -%}
+                {%- for link in footer_menu.links -%}
+                  <li><a href="{{ link.url }}" class="cpf-nav-list__link">{{ link.title }}</a></li>
+                {%- endfor -%}
+              {%- else -%}
+                <li><a href="{{ routes.root_url }}" class="cpf-nav-list__link">Home</a></li>
+                <li><a href="{{ routes.collections_url }}" class="cpf-nav-list__link">Shop</a></li>
+                <li><a href="/collections/best-sellers" class="cpf-nav-list__link">Best Sellers</a></li>
+                <li><a href="{{ routes.root_url }}pages/contact" class="cpf-nav-list__link">Contact Us</a></li>
+                <li><a href="{{ routes.root_url }}pages/faq" class="cpf-nav-list__link">FAQs</a></li>
+              {%- endif -%}
+            </ul>
+          </nav>
+        </div>
+
+        {%- comment -%} COL 3 – Policies {%- endcomment -%}
+        <div class="cpf-col">
+          <h3 class="cpf-col__heading">{{ section.settings.policies_heading }}</h3>
+          <nav aria-label="Store policies">
+            <ul class="cpf-nav-list">
+              {%- if shop.privacy_policy != blank -%}
+                <li><a href="{{ shop.privacy_policy.url }}" class="cpf-nav-list__link">Privacy Policy</a></li>
+              {%- endif -%}
+              {%- if shop.refund_policy != blank -%}
+                <li><a href="{{ shop.refund_policy.url }}" class="cpf-nav-list__link">Refund Policy</a></li>
+              {%- endif -%}
+              {%- if shop.shipping_policy != blank -%}
+                <li><a href="{{ shop.shipping_policy.url }}" class="cpf-nav-list__link">Shipping Policy</a></li>
+              {%- endif -%}
+              {%- if shop.terms_of_service != blank -%}
+                <li><a href="{{ shop.terms_of_service.url }}" class="cpf-nav-list__link">Terms &amp; Conditions</a></li>
+              {%- endif -%}
+            </ul>
+          </nav>
+        </div>
+
+        {%- comment -%} COL 4 – Contact {%- endcomment -%}
+        <div class="cpf-col">
+          <h3 class="cpf-col__heading">{{ section.settings.contact_heading }}</h3>
+          <ul class="cpf-contact-list">
+            {%- if section.settings.contact_email != blank -%}
+              <li class="cpf-contact-list__item">
+                <svg class="cpf-contact-list__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <a href="mailto:{{ section.settings.contact_email }}" class="cpf-contact-list__link">{{ section.settings.contact_email }}</a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.contact_whatsapp != blank -%}
+              <li class="cpf-contact-list__item">
+                <svg class="cpf-contact-list__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <a href="https://wa.me/{{ section.settings.contact_whatsapp | remove: '+' | remove: ' ' }}" target="_blank" rel="noopener" class="cpf-contact-list__link">{{ section.settings.contact_whatsapp }}</a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.business_hours != blank -%}
+              <li class="cpf-contact-list__item">
+                <svg class="cpf-contact-list__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span class="cpf-contact-list__text">{{ section.settings.business_hours }}</span>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.trust_note != blank -%}
+              <li class="cpf-contact-list__trust">{{ section.settings.trust_note }}</li>
+            {%- endif -%}
+          </ul>
+        </div>
+
+      </div>{%- comment -%} /cpf-grid {%- endcomment -%}
+    </div>
+  </div>
+
+  {%- comment -%} ── NEWSLETTER ── {%- endcomment -%}
+  {%- if section.settings.show_newsletter -%}
+  <div class="cpf-newsletter">
+    <div class="cpf-container">
+      <div class="cpf-newsletter__inner">
+        <div class="cpf-newsletter__text">
+          {%- if section.settings.newsletter_heading != blank -%}
+            <h3 class="cpf-newsletter__title">{{ section.settings.newsletter_heading }}</h3>
+          {%- endif -%}
+          {%- if section.settings.newsletter_desc != blank -%}
+            <p class="cpf-newsletter__desc">{{ section.settings.newsletter_desc }}</p>
+          {%- endif -%}
+        </div>
+        {%- form 'customer', class: 'cpf-newsletter__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- if form.posted_successfully? -%}
+            <p class="cpf-newsletter__success">✓ &nbsp;{{ section.settings.newsletter_success }}</p>
+          {%- else -%}
+            <div class="cpf-newsletter__field">
+              <label for="cpf-email-{{ section.id }}" class="visually-hidden">Email address</label>
+              <input type="email"
+                     id="cpf-email-{{ section.id }}"
+                     name="contact[email]"
+                     class="cpf-newsletter__input"
+                     placeholder="{{ section.settings.newsletter_placeholder }}"
+                     required
+                     autocomplete="email">
+              <button type="submit" class="cpf-newsletter__btn">{{ section.settings.newsletter_btn }}</button>
+            </div>
+            {%- if form.errors -%}
+              <p class="cpf-newsletter__error">{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</p>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+  {%- endif -%}
+
+  {%- comment -%} ── BOTTOM BAR ── {%- endcomment -%}
+  <div class="cpf-bottom">
+    <div class="cpf-container">
+      <div class="cpf-bottom__inner">
+        <p class="cpf-bottom__copy">
+          &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ section.settings.copyright_suffix }}
+        </p>
+        <p class="cpf-bottom__secure">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          {{ section.settings.secure_note }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "Custom Premium Footer",
+  "tag": "section",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_desc",
+      "label": "Brand description",
+      "default": "Premium wellness solutions designed for comfort, recovery, and everyday care."
+    },
+    {
+      "type": "header",
+      "content": "Social Media"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "text",
+      "id": "social_whatsapp",
+      "label": "WhatsApp number (with country code)",
+      "placeholder": "+91 9876543210"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "header",
+      "content": "Quick Links Column"
+    },
+    {
+      "type": "text",
+      "id": "links_heading",
+      "label": "Column heading",
+      "default": "Quick Links"
+    },
+    {
+      "type": "link_list",
+      "id": "links_menu",
+      "label": "Navigation menu"
+    },
+    {
+      "type": "header",
+      "content": "Policies Column"
+    },
+    {
+      "type": "text",
+      "id": "policies_heading",
+      "label": "Column heading",
+      "default": "Policies"
+    },
+    {
+      "type": "header",
+      "content": "Contact Column"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Column heading",
+      "default": "Need Help?"
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "Support email",
+      "default": "support@yourstore.com"
+    },
+    {
+      "type": "text",
+      "id": "contact_whatsapp",
+      "label": "WhatsApp number",
+      "default": "+91 9876543210"
+    },
+    {
+      "type": "text",
+      "id": "business_hours",
+      "label": "Business hours",
+      "default": "Mon–Sat, 10am – 6pm IST"
+    },
+    {
+      "type": "text",
+      "id": "trust_note",
+      "label": "Trust note",
+      "default": "We typically respond within 2–4 hours."
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter heading",
+      "default": "Join Our Wellness Community"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_desc",
+      "label": "Newsletter description",
+      "default": "Get exclusive tips, early access to products, and special offers — straight to your inbox."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Email placeholder",
+      "default": "Your email address"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_btn",
+      "label": "Subscribe button label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_success",
+      "label": "Success message",
+      "default": "Thank you for subscribing!"
+    },
+    {
+      "type": "header",
+      "content": "Bottom Bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright_suffix",
+      "label": "Copyright suffix",
+      "default": "All rights reserved."
+    },
+    {
+      "type": "text",
+      "id": "secure_note",
+      "label": "Secure shopping note",
+      "default": "100% Secure Shopping"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Premium Footer"
+    }
+  ]
+}
+{% endschema %}

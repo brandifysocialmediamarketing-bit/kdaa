@@ -1,0 +1,111 @@
+<div class="pw-hero premium-wellness-section">
+  <div class="pw-hero__container">
+    <div class="pw-hero__content">
+      {%- if section.settings.tagline != blank -%}
+        <span class="pw-hero__tagline">{{ section.settings.tagline }}</span>
+      {%- endif -%}
+      
+      {%- if section.settings.title != blank -%}
+        <h1 class="pw-hero__title">{{ section.settings.title }}</h1>
+      {%- endif -%}
+      
+      {%- if section.settings.description != blank -%}
+        <p class="pw-hero__desc">{{ section.settings.description }}</p>
+      {%- endif -%}
+      
+      <div class="pw-hero__actions">
+        {%- if section.settings.btn_1_label != blank and section.settings.btn_1_link != blank -%}
+          <a href="{{ section.settings.btn_1_link }}" class="pw-btn pw-btn--primary">
+            {{ section.settings.btn_1_label }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.btn_2_label != blank and section.settings.btn_2_link != blank -%}
+          <a href="{{ section.settings.btn_2_link }}" class="pw-btn pw-btn--secondary">
+            {{ section.settings.btn_2_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+    
+    <div class="pw-hero__image-wrapper">
+      {%- if section.settings.image != blank -%}
+        {%- assign img_url = section.settings.image | image_url: width: 1200 -%}
+        <img
+          src="{{ img_url }}"
+          sizes="(min-width: 990px) 50vw, 100vw"
+          srcset="{{ section.settings.image | image_url: width: 600 }} 600w,
+                  {{ section.settings.image | image_url: width: 800 }} 800w,
+                  {{ section.settings.image | image_url: width: 1000 }} 1000w,
+                  {{ section.settings.image | image_url: width: 1200 }} 1200w"
+          alt="{{ section.settings.image.alt | escape | default: section.settings.title }}"
+          class="pw-hero__image"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          fetchpriority="high"
+        >
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'pw-hero__image placeholder-svg' }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Premium Hero",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Natural Pain Relief Solutions"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Live Pain Free & Active Every Single Day"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Clinically proven, physician-formulated products designed to target chronic joint pain, muscle stiffness, and inflammation naturally."
+    },
+    {
+      "type": "text",
+      "id": "btn_1_label",
+      "label": "Primary Button Label",
+      "default": "Shop Relief Now"
+    },
+    {
+      "type": "url",
+      "id": "btn_1_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "btn_2_label",
+      "label": "Secondary Button Label",
+      "default": "Learn Our Science"
+    },
+    {
+      "type": "url",
+      "id": "btn_2_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero Image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Premium Hero"
+    }
+  ]
+}
+{% endschema %}

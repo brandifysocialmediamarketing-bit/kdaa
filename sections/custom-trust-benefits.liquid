@@ -1,0 +1,121 @@
+<div class="pw-trust premium-wellness-section">
+  <div class="pw-trust__grid">
+    
+    <!-- Benefit 1: Secure Checkout -->
+    <div class="pw-trust__item">
+      <div class="pw-trust__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <div class="pw-trust__content">
+        <h3 class="pw-trust__title">{{ section.settings.title_1 }}</h3>
+        <p class="pw-trust__desc">{{ section.settings.desc_1 }}</p>
+      </div>
+    </div>
+    
+    <!-- Benefit 2: Premium Quality -->
+    <div class="pw-trust__item">
+      <div class="pw-trust__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="7"></circle>
+          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+        </svg>
+      </div>
+      <div class="pw-trust__content">
+        <h3 class="pw-trust__title">{{ section.settings.title_2 }}</h3>
+        <p class="pw-trust__desc">{{ section.settings.desc_2 }}</p>
+      </div>
+    </div>
+    
+    <!-- Benefit 3: Easy To Use -->
+    <div class="pw-trust__item">
+      <div class="pw-trust__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <div class="pw-trust__content">
+        <h3 class="pw-trust__title">{{ section.settings.title_3 }}</h3>
+        <p class="pw-trust__desc">{{ section.settings.desc_3 }}</p>
+      </div>
+    </div>
+    
+    <!-- Benefit 4: Customer Support -->
+    <div class="pw-trust__item">
+      <div class="pw-trust__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </div>
+      <div class="pw-trust__content">
+        <h3 class="pw-trust__title">{{ section.settings.title_4 }}</h3>
+        <p class="pw-trust__desc">{{ section.settings.desc_4 }}</p>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Trust Benefits",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title_1",
+      "label": "Benefit 1 Title",
+      "default": "Secure Checkout"
+    },
+    {
+      "type": "text",
+      "id": "desc_1",
+      "label": "Benefit 1 Description",
+      "default": "SSL encrypted transactions"
+    },
+    {
+      "type": "text",
+      "id": "title_2",
+      "label": "Benefit 2 Title",
+      "default": "Premium Quality"
+    },
+    {
+      "type": "text",
+      "id": "desc_2",
+      "label": "Benefit 2 Description",
+      "default": "Clinically proven formulas"
+    },
+    {
+      "type": "text",
+      "id": "title_3",
+      "label": "Benefit 3 Title",
+      "default": "Easy To Use"
+    },
+    {
+      "type": "text",
+      "id": "desc_3",
+      "label": "Benefit 3 Description",
+      "default": "Non-greasy, fast absorption"
+    },
+    {
+      "type": "text",
+      "id": "title_4",
+      "label": "Benefit 4 Title",
+      "default": "Customer Support"
+    },
+    {
+      "type": "text",
+      "id": "desc_4",
+      "label": "Benefit 4 Description",
+      "default": "24/7 dedicated support"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Trust Benefits"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,132 @@
+<div class="pw-why premium-wellness-section">
+  <div class="pw-why__container">
+    {%- if section.settings.title != blank or section.settings.description != blank -%}
+      <div class="pw-why__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="pw-why__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="pw-why__desc">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="pw-why__grid">
+      {%- for block in section.blocks -%}
+        <div class="pw-why__card" {{ block.shopify_attributes }}>
+          <div class="pw-why__card-icon">
+            {%- if block.settings.icon == 'medical' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            {%- elsif block.settings.icon == 'shield' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            {%- elsif block.settings.icon == 'leaf' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.58-1 9.8a7 7 0 0 1-7 8.2z"></path>
+                <path d="M9 22v-4"></path>
+              </svg>
+            {%- else -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 8v8M8 12h8"></path>
+              </svg>
+            {%- endif -%}
+          </div>
+          {%- if block.settings.title != blank -%}
+            <h3 class="pw-why__card-title">{{ block.settings.title }}</h3>
+          {%- endif -%}
+          {%- if block.settings.description != blank -%}
+            <p class="pw-why__card-desc">{{ block.settings.description }}</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Why Choose Us",
+  "tag": "section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Why Doctors Recommend Us"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Formulated with medical integrity and natural scientific potency to bring relief that is rapid, targeted, and completely safe."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "medical", "label": "Pulse/Medical" },
+            { "value": "shield", "label": "Shield/Clinically Safe" },
+            { "value": "leaf", "label": "Leaf/Natural Ingredient" }
+          ],
+          "default": "medical"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Feature Title",
+          "default": "Physician-Formulated"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Feature Description",
+          "default": "Our formulas are created by board-certified orthopedic specialists to guarantee high clinical efficacy."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Why Choose Us",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "medical",
+            "title": "Physician-Formulated",
+            "description": "Our formulas are created by board-certified orthopedic specialists to guarantee high clinical efficacy."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "Clinically Proven",
+            "description": "Rigorous double-blind clinical studies prove our active compounds resolve local swelling and pain."
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "leaf",
+            "title": "100% Organic Extracts",
+            "description": "Zero chemical binders or artificial synthetic irritants. Just clean, pure botanical nutrients."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

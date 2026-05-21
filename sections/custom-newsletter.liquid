@@ -1,0 +1,85 @@
+<div class="pw-newsletter premium-wellness-section" id="pw-newsletter-{{ section.id }}">
+  <div class="pw-newsletter__container">
+    {%- if section.settings.title != blank -%}
+      <h2 class="pw-newsletter__title">{{ section.settings.title }}</h2>
+    {%- endif -%}
+    {%- if section.settings.description != blank -%}
+      <p class="pw-newsletter__desc">{{ section.settings.description }}</p>
+    {%- endif -%}
+
+    {%- form 'customer', class: 'pw-newsletter__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      
+      {%- if form.posted_successfully? -%}
+        <p class="pw-newsletter__success">{{ section.settings.success_message }}</p>
+      {%- else -%}
+        <div class="pw-newsletter__input-wrapper">
+          <input
+            type="email"
+            name="contact[email]"
+            value="{{ form.email }}"
+            aria-label="Email address"
+            class="pw-newsletter__input"
+            placeholder="{{ section.settings.placeholder }}"
+            required
+            autocorrect="off"
+            autocapitalize="off"
+          >
+        </div>
+        <button type="submit" class="pw-newsletter__btn">
+          {{ section.settings.button_label }}
+        </button>
+      {%- endif -%}
+
+      {%- if form.errors -%}
+        <p class="pw-newsletter__error" style="color: red; margin-top: 10px;">
+          {{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}
+        </p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Newsletter",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Join Our Wellness Community"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Subscribe to receive exclusive pain-relief tips, clinical studies, and early access to new formulas."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input Placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thank you! You have successfully subscribed."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Newsletter"
+    }
+  ]
+}
+{% endschema %}

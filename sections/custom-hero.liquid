@@ -1,0 +1,74 @@
+{% comment %}
+Custom Premium Hero Section - Scoped and Lightweight
+{% endcomment %}
+{{ 'custom-hero.css' | asset_url | stylesheet_tag }}
+<div class="custom-hero-section">
+  <div class="custom-hero-container">
+    <div class="custom-hero-content">
+      {% if section.settings.tagline != blank %}
+        <span class="custom-hero-tagline">{{ section.settings.tagline }}</span>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h1 class="custom-hero-title">{{ section.settings.title }}</h1>
+      {% endif %}
+      {% if section.settings.description != blank %}
+        <p class="custom-hero-description">{{ section.settings.description }}</p>
+      {% endif %}
+      <div class="custom-hero-actions">
+        {% if section.settings.btn_1_label != blank and section.settings.btn_1_link != blank %}
+          <a href="{{ section.settings.btn_1_link }}" class="custom-hero-btn custom-hero-btn-primary" role="button">{{ section.settings.btn_1_label }}</a>
+        {% endif %}
+        {% if section.settings.btn_2_label != blank and section.settings.btn_2_link != blank %}
+          <a href="{{ section.settings.btn_2_link }}" class="custom-hero-btn custom-hero-btn-secondary" role="button">{{ section.settings.btn_2_label }}</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="custom-hero-image-wrapper">
+      {% if section.settings.image != blank %}
+        {% assign img_url = section.settings.image | image_url: width: 1200 %}
+        <img
+          src="{{ img_url }}"
+          sizes="(min-width: 990px) 50vw, 100vw"
+          srcset="{{ section.settings.image | image_url: width: 600 }} 600w,
+                  {{ section.settings.image | image_url: width: 800 }} 800w,
+                  {{ section.settings.image | image_url: width: 1000 }} 1000w,
+                  {{ section.settings.image | image_url: width: 1200 }} 1200w"
+          alt="{{ section.settings.image.alt | escape | default: section.settings.title }}"
+          class="custom-hero-image"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          fetchpriority="high"
+        >
+      {% elsif collections['all'].products.size > 0 and collections['all'].products.first.featured_image != blank %}
+        {% assign fallback_image = collections['all'].products.first.featured_image %}
+        <img
+          src="{{ fallback_image | image_url: width: 1200 }}"
+          alt="{{ collections['all'].products.first.title | escape }}"
+          class="custom-hero-image"
+          fetchpriority="high"
+          style="border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"
+        >
+      {% else %}
+        {{ 'image' | placeholder_svg_tag: 'custom-hero-image placeholder-svg' }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Custom Premium Hero",
+  "tag": "section",
+  "class": "custom-premium-hero-wrapper",
+  "settings": [
+    {"type": "text", "id": "tagline", "label": "Tagline", "default": "Advanced Relief For Everyday Comfort"},
+    {"type": "text", "id": "title", "label": "Heading", "default": "Advanced Relief For Everyday Comfort"},
+    {"type": "textarea", "id": "description", "label": "Subheading", "default": "Premium wellness solutions designed to support comfort, recovery, and everyday care."},
+    {"type": "text", "id": "btn_1_label", "label": "Primary Button Label", "default": "Shop Now"},
+    {"type": "url", "id": "btn_1_link", "label": "Primary Button Link"},
+    {"type": "text", "id": "btn_2_label", "label": "Secondary Button Label", "default": "Learn More"},
+    {"type": "url", "id": "btn_2_link", "label": "Secondary Button Link"},
+    {"type": "image_picker", "id": "image", "label": "Hero Image"}
+  ],
+  "presets": [{"name": "Custom Premium Hero"}]
+}
+{% endschema %}

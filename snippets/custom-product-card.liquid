@@ -1,0 +1,82 @@
+{% comment %}
+  Renders a custom product card.
+  Usage:
+  {% render 'custom-product-card', product: product %}
+{% endcomment %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+-%}
+
+<div class="pw-product-card" data-product-id="{{ product.id }}">
+  <a href="{{ product.url }}" class="pw-product-card__image-link" aria-label="View {{ product.title | escape }}">
+    {%- if product.featured_media != blank -%}
+      <img
+        src="{{ product.featured_media | image_url: width: 600 }}"
+        sizes="(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw"
+        srcset="{{ product.featured_media | image_url: width: 300 }} 300w,
+                {{ product.featured_media | image_url: width: 450 }} 450w,
+                {{ product.featured_media | image_url: width: 600 }} 600w,
+                {{ product.featured_media | image_url: width: 800 }} 800w"
+        alt="{{ product.featured_media.alt | escape | default: product.title }}"
+        class="pw-product-card__image"
+        width="{{ product.featured_media.width }}"
+        height="{{ product.featured_media.height }}"
+        loading="lazy"
+      >
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'pw-product-card__image placeholder-svg' }}
+    {%- endif -%}
+
+    {%- if on_sale -%}
+      {%- assign discount = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round -%}
+      <span class="pw-product-card__badge">Save {{ discount }}%</span>
+    {%- endif -%}
+  </a>
+
+  <div class="pw-product-card__info">
+    <a href="{{ product.url }}" class="pw-product-card__title">
+      {{ product.title }}
+    </a>
+    
+    <div class="pw-product-card__price-wrapper">
+      <span class="pw-product-card__price">{{ current_variant.price | money }}</span>
+      {%- if on_sale -%}
+        <span class="pw-product-card__compare-price">{{ current_variant.compare_at_price | money }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- if current_variant -%}
+      <product-form-component data-product-id="{{ product.id }}" id="product-form-{{ section.id }}-{{ product.id }}" class="pw-product-card__form">
+        {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" ref="variantId">
+          <input type="hidden" name="quantity" value="1">
+          <div ref="liveRegion" class="visually-hidden" aria-live="polite"></div>
+          <div ref="addToCartTextError" class="pw-product-card__error hidden" style="color: red; font-size: 0.8rem; margin-bottom: 8px;"></div>
+          
+          <add-to-cart-component ref="addToCartButtonContainer" class="add-to-cart-component">
+            <button
+              type="submit"
+              ref="addToCartButton"
+              class="pw-product-card__btn"
+              {% unless current_variant.available %}disabled{% endunless %}
+              aria-label="Add {{ product.title | escape }} to cart"
+            >
+              <span>
+                {%- if current_variant.available -%}
+                  Add to Cart
+                {%- else -%}
+                  Sold Out
+                {%- endif -%}
+              </span>
+            </button>
+          </add-to-cart-component>
+        {%- endform -%}
+      </product-form-component>
+    {%- endif -%}
+  </div>
+</div>

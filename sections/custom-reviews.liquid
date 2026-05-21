@@ -1,0 +1,137 @@
+<div class="pw-reviews premium-wellness-section">
+  <div class="pw-reviews__container">
+    {%- if section.settings.title != blank or section.settings.description != blank -%}
+      <div class="pw-reviews__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="pw-reviews__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="pw-reviews__desc">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="pw-reviews__grid">
+      {%- for block in section.blocks -%}
+        <div class="pw-review-card" {{ block.shopify_attributes }}>
+          <div class="pw-review-card__stars">
+            {%- assign rating = block.settings.stars | plus: 0 -%}
+            {%- for i in (1..rating) -%}
+              <svg class="pw-review-card__star-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+              </svg>
+            {%- endfor -%}
+          </div>
+          
+          {%- if block.settings.content != blank -%}
+            <blockquote class="pw-review-card__content">
+              "{{ block.settings.content }}"
+            </blockquote>
+          {%- endif -%}
+          
+          <div class="pw-review-card__author">
+            <div class="pw-review-card__author-info">
+              {%- if block.settings.author != blank -%}
+                <span class="pw-review-card__author-name">{{ block.settings.author }}</span>
+              {%- endif -%}
+              {%- if block.settings.verified -%}
+                <span class="pw-review-card__author-status">
+                  <svg class="pw-review-card__checkmark" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                  Verified Buyer
+                </span>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Reviews",
+  "tag": "section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Loved by 10,000+ Happy Customers"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "See how our premium pain-relief solutions are helping real people reclaim their active lives."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "stars",
+          "label": "Stars Rating",
+          "options": [
+            { "value": "5", "label": "5 Stars" },
+            { "value": "4", "label": "4 Stars" }
+          ],
+          "default": "5"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Review Content",
+          "default": "After years of joint pain, I finally found something that actually works. Within 3 days of applying the balm, my knee stiffness was completely gone!"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Reviewer Name",
+          "default": "Ramesh K."
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified Buyer Checkmark",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "author": "Aarav S.",
+            "content": "This pain-relief ointment works like magic. It is non-greasy, absorbs immediately, and blocks the throbbing back pain in minutes."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author": "Dr. Priya M.",
+            "content": "I recommend these wellness formulas to my patients. Excellent clinical profile and highly bioavailable ingredients."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author": "Vikram J.",
+            "content": "Fantastic product! I use it after workouts to prevent muscle cramps and stiffness. Very fast shipping too."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

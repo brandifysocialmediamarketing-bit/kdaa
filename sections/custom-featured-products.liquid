@@ -1,0 +1,104 @@
+<div class="pw-featured premium-wellness-section" id="pw-featured-{{ section.id }}">
+  <div class="pw-featured__container">
+    {%- if section.settings.title != blank or section.settings.description != blank -%}
+      <div class="pw-featured__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="pw-featured__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="pw-featured__desc">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="pw-product-grid" style="--grid-cols-desktop: {{ section.settings.columns }};">
+      {%- assign selected_collection = collections[section.settings.collection] -%}
+      {%- if selected_collection != blank and selected_collection.products_count > 0 -%}
+        {%- for product in selected_collection.products limit: section.settings.max_products -%}
+          {%- render 'custom-product-card', product: product -%}
+        {%- endfor -%}
+      {%- else -%}
+        {% comment %} Fallback onboarding items if no collection is selected {% endcomment %}
+        {%- for i in (1..section.settings.max_products) -%}
+          <div class="pw-product-card">
+            <div class="pw-product-card__image-link">
+              {{ 'product-' | append: i | placeholder_svg_tag: 'pw-product-card__image' }}
+            </div>
+            <div class="pw-product-card__info">
+              <h3 class="pw-product-card__title">Wellness Product {{ i }}</h3>
+              <div class="pw-product-card__price-wrapper">
+                <span class="pw-product-card__price">₹999.00</span>
+              </div>
+              <button class="pw-product-card__btn" disabled>Out of Stock</button>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  #pw-featured-{{ section.id }} .pw-product-grid {
+    grid-template-columns: repeat(var(--grid-cols-desktop), 1fr);
+  }
+  @media (max-width: 989px) {
+    #pw-featured-{{ section.id }} .pw-product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 479px) {
+    #pw-featured-{{ section.id }} .pw-product-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Custom Featured Products",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Best Selling Pain Relief Formulas"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Explore our targeted solutions clinically formulated to bring fast-acting, lasting relief from pain and stiffness."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Max Products to Display",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns on Desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Featured Products"
+    }
+  ]
+}
+{% endschema %}

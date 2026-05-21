@@ -1,0 +1,40 @@
+{% comment %}
+Custom Announcement Bar – Seamless CSS Marquee
+{% endcomment %}
+{{ 'custom-announcement-bar.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #custom-announcement-{{ section.id }} {
+    --bg-color: {{ section.settings.bg_color }};
+    --text-color: {{ section.settings.text_color }};
+  }
+{% endstyle %}
+
+<div id="custom-announcement-{{ section.id }}" class="custom-announcement-bar">
+  <div class="marquee-container">
+    <div class="marquee-content">
+      {% for i in (1..10) %}
+        <span class="marquee-text">{{ section.settings.text }}</span>
+      {% endfor %}
+    </div>
+    <div class="marquee-content" aria-hidden="true">
+      {% for i in (1..10) %}
+        <span class="marquee-text">{{ section.settings.text }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Announcement Marquee",
+  "tag": "section",
+  "class": "custom-premium-announcement-wrapper",
+  "settings": [
+    {"type": "text", "id": "text", "label": "Announcement Text", "default": "Cash On Delivery"},
+    {"type": "color", "id": "bg_color", "label": "Background Color", "default": "#2A5A52"},
+    {"type": "color", "id": "text_color", "label": "Text Color", "default": "#FFFFFF"}
+  ],
+  "presets": [{"name": "Announcement Marquee"}]
+}
+{% endschema %}
