@@ -10,9 +10,11 @@
 
   if rating == blank or rating == 0
     assign product_seed = product.id | default: 123456789
+    assign day_seed = "now" | date: "%j" | plus: 0
+    assign combined_seed = product_seed | plus: day_seed
     
     # Deterministic pseudo-random rating: 4.8, 4.9, or 5.0
-    assign seed_rating_mod = product_seed | modulo: 3
+    assign seed_rating_mod = combined_seed | modulo: 3
     if seed_rating_mod == 0
       assign rating = 4.8
     elsif seed_rating_mod == 1
@@ -24,7 +26,7 @@
     assign scale_max = 5
     
     # Deterministic review count between 80 and 150
-    assign seed_reviews_mod = product_seed | modulo: 71 | plus: 80
+    assign seed_reviews_mod = combined_seed | modulo: 71 | plus: 80
     assign rating_count = seed_reviews_mod
     assign is_fallback_rating = true
   endif
@@ -133,8 +135,10 @@
   {% comment %} Dynamic Sold Stats Line {% endcomment %}
   {% liquid
     assign product_seed = product.id | default: 123456789
-    assign sold_count = product_seed | modulo: 11 | plus: 15
-    assign sold_hours = product_seed | modulo: 3 | plus: 1
+    assign day_seed = "now" | date: "%j" | plus: 0
+    assign combined_seed = product_seed | plus: day_seed
+    assign sold_count = combined_seed | modulo: 11 | plus: 15
+    assign sold_hours = combined_seed | modulo: 3 | plus: 1
   %}
   <div class="sold-stats-indicator" style="color: #ff3333; font-weight: 700; font-size: 0.95rem; margin-top: 10px; display: flex; align-items: center; gap: 6px; line-height: 1;">
     <span style="font-size: 1.15rem;">🔥</span>

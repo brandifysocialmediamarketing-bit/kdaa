@@ -53,9 +53,11 @@
     {% comment %} Dynamic reviews and sold stats for homepage featured cards {% endcomment %}
     {% liquid
       assign product_seed = product.id | default: 123456789
+      assign day_seed = "now" | date: "%j" | plus: 0
+      assign combined_seed = product_seed | plus: day_seed
       
-      # Reviews count and rating (deterministic based on product_seed)
-      assign seed_rating_mod = product_seed | modulo: 3
+      # Reviews count and rating (deterministic based on combined_seed)
+      assign seed_rating_mod = combined_seed | modulo: 3
       if seed_rating_mod == 0
         assign card_rating = 4.8
       elsif seed_rating_mod == 1
@@ -64,11 +66,11 @@
         assign card_rating = 5.0
       endif
       
-      assign card_reviews = product_seed | modulo: 71 | plus: 80
+      assign card_reviews = combined_seed | modulo: 71 | plus: 80
       
-      # Sold count and hours (deterministic based on product_seed)
-      assign sold_count = product_seed | modulo: 11 | plus: 15
-      assign sold_hours = product_seed | modulo: 3 | plus: 1
+      # Sold count and hours (deterministic based on combined_seed)
+      assign sold_count = combined_seed | modulo: 11 | plus: 15
+      assign sold_hours = combined_seed | modulo: 3 | plus: 1
     %}
     
     <!-- Stars & Review count -->
