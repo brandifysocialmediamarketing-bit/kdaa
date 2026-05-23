@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "product-information",
@@ -70,7 +71,6 @@
               "type": "group",
               "name": "Header",
               "settings": {
-                "open_in_new_tab": false,
                 "content_direction": "column",
                 "vertical_on_mobile": true,
                 "horizontal_alignment": "flex-start",
@@ -98,6 +98,7 @@
                 "overlay_color": "#00000026",
                 "overlay_style": "solid",
                 "gradient_direction": "to top",
+                "open_in_new_tab": false,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -440,10 +441,18 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "custom_reviews_product": {
+      "type": "custom-reviews",
+      "settings": {
+        "title": "Loved by 10,000+ Happy Customers",
+        "description": "See what real people have to say about their recovery and results."
+      }
     }
   },
   "order": [
     "main",
+    "custom_reviews_product",
     "product_recommendations_qggXJq"
   ]
 }

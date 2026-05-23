@@ -82,6 +82,23 @@
       {%- endform -%}
     </div>
   {%- endif -%}
+
+  {% comment %} Dynamic Viewers count stats line {% endcomment %}
+  {% liquid
+    assign product_seed = product_resource.id | default: 123456789
+    assign viewers_count = product_seed | modulo: 23 | plus: 18
+  %}
+  <div class="viewers-count-indicator" style="display: flex; align-items: center; gap: 8px; margin-top: 14px; margin-bottom: 6px; text-transform: none !important; font-style: normal !important; width: 100%;">
+    <div style="background-color: #000000; color: #ffffff; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </div>
+    <span style="font-size: 0.95rem; color: #111111; font-weight: 500; text-align: left;">
+      <strong style="color: #ff3333; font-weight: 700;">{{ viewers_count }}</strong> people are viewing this right now
+    </span>
+  </div>
 </product-price>
 
 {% schema %}

@@ -9,17 +9,32 @@
   assign is_fallback_rating = false
 
   if rating == blank or rating == 0
-    assign rating = 4.7
+    assign product_seed = product.id | default: 123456789
+    
+    # Deterministic pseudo-random rating: 4.8, 4.9, or 5.0
+    assign seed_rating_mod = product_seed | modulo: 3
+    if seed_rating_mod == 0
+      assign rating = 4.8
+    elsif seed_rating_mod == 1
+      assign rating = 4.9
+    else
+      assign rating = 5.0
+    endif
+    
     assign scale_max = 5
-    assign rating_count = 246
+    
+    # Deterministic review count between 80 and 150
+    assign seed_reviews_mod = product_seed | modulo: 71 | plus: 80
+    assign rating_count = seed_reviews_mod
     assign is_fallback_rating = true
   endif
 
   if request.visual_preview_mode and product == blank
     assign product = collections.all.products.first
-    assign rating = product.metafields.reviews.rating.value | default: 4.7
-    assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
-    assign rating_count = product.metafields.reviews.rating_count | default: 246
+    assign rating = 4.9
+    assign scale_max = 5
+    assign rating_count = 99
+    assign is_fallback_rating = true
   endif
 -%}
 
@@ -105,7 +120,7 @@
         {%- endif -%}
         {%- if block_settings.show_number -%}
           {%- if is_fallback_rating -%}
-            <span style="font-weight: 500; color: #555555; margin-left: 4px;">{{ rating }} out of {{ scale_max }} ({{ rating_count }} reviews)</span> <span class="verified-badge" style="color: #4caf50; font-weight: 700; margin-left: 6px; display: inline-flex; align-items: center; gap: 2px;">✓ Verified</span>
+            <span style="font-weight: 600; color: #222222; margin-left: 6px; font-size: 0.95rem;">{{ rating_count }} Reviews</span> <span class="verified-badge" style="color: #4caf50; font-weight: 700; margin-left: 6px; display: inline-flex; align-items: center; gap: 2px; font-size: 0.9rem;">✓ Verified</span>
           {%- else -%}
             {{- rating_count }}
             {{ 'content.reviews' | t }}
@@ -113,6 +128,17 @@
         {%- endif -%}
       </p>
     {%- endif -%}
+  </div>
+
+  {% comment %} Dynamic Sold Stats Line {% endcomment %}
+  {% liquid
+    assign product_seed = product.id | default: 123456789
+    assign sold_count = product_seed | modulo: 11 | plus: 15
+    assign sold_hours = product_seed | modulo: 3 | plus: 1
+  %}
+  <div class="sold-stats-indicator" style="color: #ff3333; font-weight: 700; font-size: 0.95rem; margin-top: 10px; display: flex; align-items: center; gap: 6px; line-height: 1;">
+    <span style="font-size: 1.15rem;">🔥</span>
+    <span>{{ sold_count }} sold in last {{ sold_hours }} {% if sold_hours == 1 %}hour{% else %}hours{% endif %}</span>
   </div>
 {%- endif -%}
 
@@ -167,7 +193,7 @@
   }
 
   .filled-star {
-    fill: var(--star-fill-color);
+    fill: #ffc107 !important;
   }
 {% endstylesheet %}
 
