@@ -10,11 +10,14 @@
 
   if rating == blank or rating == 0
     assign product_seed = product.id | default: 123456789
-    assign day_seed = "now" | date: "%j" | plus: 0
-    assign combined_seed = product_seed | plus: day_seed
+    assign days_since_epoch = "now" | date: "%s" | divided_by: 86400 | plus: 0
+    assign days_offset = days_since_epoch | minus: 20500
+    if days_offset < 0
+      assign days_offset = 0
+    endif
     
-    # Deterministic pseudo-random rating: 4.8, 4.9, or 5.0
-    assign seed_rating_mod = combined_seed | modulo: 3
+    # Deterministic rating (stable per product)
+    assign seed_rating_mod = product_seed | modulo: 3
     if seed_rating_mod == 0
       assign rating = 4.8
     elsif seed_rating_mod == 1
@@ -25,9 +28,11 @@
     
     assign scale_max = 5
     
-    # Deterministic review count between 80 and 150
-    assign seed_reviews_mod = combined_seed | modulo: 71 | plus: 80
-    assign rating_count = seed_reviews_mod
+    # Total reviews count (increases by 2 or 3 every day, never decreases)
+    assign base_reviews = product_seed | modulo: 31 | plus: 80
+    assign increment_rate = product_seed | modulo: 2 | plus: 2
+    assign dynamic_increment = days_offset | times: increment_rate
+    assign rating_count = base_reviews | plus: dynamic_increment
     assign is_fallback_rating = true
   endif
 

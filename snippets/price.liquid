@@ -95,7 +95,7 @@
         {% endif %}
       "
     >
-      <span class="price">{{ price | default: '&nbsp;' }}</span>
+      <span class="price" style="font-weight: 700 !important; font-size: 1.25rem !important;">{{ price | default: '&nbsp;' }}</span>
     </div>
     <div
       class="
@@ -104,26 +104,71 @@
           price__hidden
         {% endunless %}
       "
+      style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;"
     >
       {% if show_sale_price_first %}
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
-          <span class="price-item--sale price">{{ price | default: '&nbsp;' }}</span>
+          <span class="price-item--sale price" style="color: #2e7d32 !important; font-weight: 800 !important; font-size: 1.35rem !important;">{{ price | default: '&nbsp;' }}</span>
         </span>
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-          <span class="price-item--regular compare-at-price">{{- compare_at_price -}}</span>
+          <span class="price-item--regular compare-at-price" style="text-decoration: line-through !important; color: #888888 !important; font-size: 1.05rem !important;">{{- compare_at_price -}}</span>
         </span>
       {% else %}
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-          <span class="price-item--regular compare-at-price">{{- compare_at_price -}}</span>
+          <span class="price-item--regular compare-at-price" style="text-decoration: line-through !important; color: #888888 !important; font-size: 1.05rem !important;">{{- compare_at_price -}}</span>
         </span>
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
-          <span class="price-item--sale price">{{ price | default: '&nbsp;' }}</span>
+          <span class="price-item--sale price" style="color: #2e7d32 !important; font-weight: 800 !important; font-size: 1.35rem !important;">{{ price | default: '&nbsp;' }}</span>
         </span>
       {% endif %}
+      {% if show_compare_price %}
+        <span class="badge price-sale-badge-custom" style="background-color: #5d2b52 !important; color: #ffffff !important; padding: 4px 12px !important; border-radius: 100px !important; font-size: 0.8rem !important; font-weight: 700 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; vertical-align: middle !important; border: none !important; margin-left: 4px !important; line-height: 1;">Sale</span>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% if is_product_card %}
+    {% comment %} Dynamic reviews and sold stats for product cards {% endcomment %}
+    {% liquid
+      assign product_seed = product_resource.id | default: 123456789
+      assign days_since_epoch = "now" | date: "%s" | divided_by: 86400 | plus: 0
+      assign days_offset = days_since_epoch | minus: 20500
+      if days_offset < 0
+        assign days_offset = 0
+      endif
+      
+      # Reviews count and rating (increases by 2 or 3 every day, never decreases)
+      assign base_reviews = product_seed | modulo: 31 | plus: 80
+      assign increment_rate = product_seed | modulo: 2 | plus: 2
+      assign dynamic_increment = days_offset | times: increment_rate
+      assign card_reviews = base_reviews | plus: dynamic_increment
+      
+      # Sold count and hours (fluctuates daily based on day of year, which is fine and looks realistic!)
+      assign day_seed = "now" | date: "%j" | plus: 0
+      assign combined_seed = product_seed | plus: day_seed
+      assign sold_count = combined_seed | modulo: 11 | plus: 15
+      assign sold_hours = combined_seed | modulo: 3 | plus: 1
+    %}
+    
+    <!-- Stars & Review count -->
+    <div class="card-reviews-indicator" style="display: flex; align-items: center; gap: 4px; margin-top: 8px; font-family: var(--font-body--family);">
+      <div style="display: flex; align-items: center; color: #ffc107; font-size: 0.95rem; gap: 2px;">
+        {% for star in (1..5) %}
+          <svg style="width: 14px; height: 14px; fill: #ffc107;" viewBox="0 0 32 32">
+            <path d="M31.547 12a.848.848 0 00-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 00-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 00-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 001.23.893l8.428-4.434 8.432 4.432a.847.847 0 001.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 00.214-.869z" />
+          </svg>
+        {% endfor %}
+      </div>
+      <span style="font-size: 0.85rem; color: #555555; font-weight: 600; margin-left: 2px;">{{ card_reviews }} Reviews</span>
+    </div>
+    
+    <!-- Sold count 🔥 -->
+    <div class="card-sold-indicator" style="color: #ff3333; font-weight: 700; font-size: 0.85rem; margin-top: 4px; display: flex; align-items: center; gap: 4px; line-height: 1;">
+      <span>🔥</span>
+      <span>{{ sold_count }} sold in last {{ sold_hours }} {% if sold_hours == 1 %}hour{% else %}hours{% endif %}</span>
     </div>
   {% endif %}
   {%- if selected_variant.unit_price and show_unit_price %}
