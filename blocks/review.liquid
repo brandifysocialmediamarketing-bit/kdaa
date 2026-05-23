@@ -11,9 +11,9 @@
   if rating == blank or rating == 0
     assign product_seed = product.id | default: 123456789
     assign days_since_epoch = "now" | date: "%s" | divided_by: 86400 | plus: 0
-    assign days_offset = days_since_epoch | minus: 20500
-    if days_offset < 0
-      assign days_offset = 0
+    assign days_diff = days_since_epoch | minus: 20597
+    if days_diff < 0
+      assign days_diff = 0
     endif
     
     # Deterministic rating (stable per product)
@@ -28,11 +28,15 @@
     
     assign scale_max = 5
     
-    # Total reviews count (increases by 2 or 3 every day, never decreases)
-    assign base_reviews = product_seed | modulo: 31 | plus: 80
-    assign increment_rate = product_seed | modulo: 2 | plus: 2
-    assign dynamic_increment = days_offset | times: increment_rate
-    assign rating_count = base_reviews | plus: dynamic_increment
+    # Total reviews count (starts at 126 for Product A, 187 for Product B, increases by 2 or 3 per day)
+    assign p_handle = product.handle
+    if p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
+      assign dynamic_increment = days_diff | times: 3
+      assign rating_count = 187 | plus: dynamic_increment
+    else
+      assign dynamic_increment = days_diff | times: 2
+      assign rating_count = 126 | plus: dynamic_increment
+    endif
     assign is_fallback_rating = true
   endif
 
