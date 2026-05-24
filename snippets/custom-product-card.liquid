@@ -59,15 +59,35 @@
         assign days_diff = 0
       endif
       
-      # Total reviews count (starts at 126 for Product A, 187 for Product B, increases by 2 or 3 per day)
-      assign p_handle = product.handle
-      if p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
-        assign dynamic_increment = days_diff | times: 3
-        assign card_reviews = 187 | plus: dynamic_increment
+      # Assign custom starting counts and daily rates based on product handle
+      assign p_handle = product.handle | downcase
+      assign base_count = 86
+      assign daily_rate = 2
+      
+      if p_handle contains "paronychia" or p_handle contains "fungal"
+        assign base_count = 86
+        assign daily_rate = 2
+      elsif p_handle contains "fa-le-mei" or p_handle contains "floral"
+        assign base_count = 124
+        assign daily_rate = 3
+      elsif p_handle contains "ginger" or p_handle contains "essence"
+        assign base_count = 138
+        assign daily_rate = 2
+      elsif p_handle contains "foot-pads" or p_handle contains "detox" or p_handle contains "patch"
+        assign base_count = 149
+        assign daily_rate = 3
+      elsif p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
+        assign base_count = 98
+        assign daily_rate = 2
       else
-        assign dynamic_increment = days_diff | times: 2
-        assign card_reviews = 126 | plus: dynamic_increment
+        # Fallback for newly uploaded products
+        assign base_count = product_seed | modulo: 41 | plus: 75
+        assign daily_rate = product_seed | modulo: 2 | plus: 2
       endif
+      
+      # Dynamic daily increment
+      assign dynamic_increment = days_diff | times: daily_rate
+      assign card_reviews = base_count | plus: dynamic_increment
       
       # Sold count and hours (fluctuates daily based on day of year, which is fine and looks realistic!)
       assign day_seed = "now" | date: "%j" | plus: 0

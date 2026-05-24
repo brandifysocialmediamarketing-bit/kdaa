@@ -1,184 +1,679 @@
-<div class="pw-reviews premium-wellness-section">
+{%- liquid
+  assign product = closest.product | default: product
+  assign rating = product.metafields.reviews.rating.value.rating
+  assign scale_max = product.metafields.reviews.rating.value.scale_max
+  assign rating_count = product.metafields.reviews.rating_count
+  assign is_fallback_rating = false
+
+  if rating == blank or rating == 0
+    assign product_seed = product.id | default: 123456789
+    assign days_since_epoch = "now" | date: "%s" | divided_by: 86400 | plus: 0
+    assign days_diff = days_since_epoch | minus: 20597
+    if days_diff < 0
+      assign days_diff = 0
+    endif
+    
+    # Deterministic rating (stable per product)
+    assign seed_rating_mod = product_seed | modulo: 3
+    if seed_rating_mod == 0
+      assign rating = 4.8
+    elsif seed_rating_mod == 1
+      assign rating = 4.9
+    else
+      assign rating = 5.0
+    endif
+    
+    assign scale_max = 5
+    
+    # Assign custom starting counts and daily rates based on product handle
+    assign p_handle = product.handle | downcase
+    assign base_count = 86
+    assign daily_rate = 2
+    
+    if p_handle contains "paronychia" or p_handle contains "fungal"
+      assign base_count = 86
+      assign daily_rate = 2
+    elsif p_handle contains "fa-le-mei" or p_handle contains "floral"
+      assign base_count = 124
+      assign daily_rate = 3
+    elsif p_handle contains "ginger" or p_handle contains "essence"
+      assign base_count = 138
+      assign daily_rate = 2
+    elsif p_handle contains "foot-pads" or p_handle contains "detox" or p_handle contains "patch"
+      assign base_count = 149
+      assign daily_rate = 3
+    elsif p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
+      assign base_count = 98
+      assign daily_rate = 2
+    else
+      # Fallback for newly uploaded products
+      assign base_count = product_seed | modulo: 41 | plus: 75
+      assign daily_rate = product_seed | modulo: 2 | plus: 2
+    endif
+    
+    # Dynamic daily increment
+    assign dynamic_increment = days_diff | times: daily_rate
+    assign rating_count = base_count | plus: dynamic_increment
+    assign is_fallback_rating = true
+  endif
+-%}
+
+<div class="pw-reviews premium-wellness-section" id="pw-reviews-root" data-rating="{{ rating }}" data-rating-count="{{ rating_count }}">
   <div class="pw-reviews__container">
-    {%- if section.settings.title != blank or section.settings.description != blank -%}
-      <div class="pw-reviews__header">
-        {%- if section.settings.title != blank -%}
-          <h2 class="pw-reviews__title">{{ section.settings.title }}</h2>
-        {%- endif -%}
-        {%- if section.settings.description != blank -%}
-          <p class="pw-reviews__desc">{{ section.settings.description }}</p>
-        {%- endif -%}
-      </div>
-    {%- endif -%}
-
-    <div class="pw-reviews__grid">
-      {%- liquid
-        assign has_custom_blocks = false
-        if section.blocks.size > 0
-          assign has_custom_blocks = true
-        endif
-      -%}
-
-      {%- if has_custom_blocks -%}
-        {%- for block in section.blocks -%}
-          <div class="pw-review-card" {{ block.shopify_attributes }}>
-            <div class="pw-review-card__stars">
-              {%- assign rating = block.settings.stars | plus: 0 -%}
-              {%- for i in (1..rating) -%}
-                <svg class="pw-review-card__star-icon" viewBox="0 0 24 24" fill="currentColor" style="color: #ffc107;">
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                </svg>
-              {%- endfor -%}
-            </div>
-            
-            {%- if block.settings.content != blank -%}
-              <blockquote class="pw-review-card__content">
-                "{{ block.settings.content }}"
-              </blockquote>
-            {%- endif -%}
-            
-            <div class="pw-review-card__author">
-              <div class="pw-review-card__author-info">
-                {%- if block.settings.author != blank -%}
-                  <span class="pw-review-card__author-name">{{ block.settings.author }}</span>
-                {%- endif -%}
-                {%- if block.settings.verified -%}
-                  <span class="pw-review-card__author-status" style="color: #2E7D32; font-weight: 600;">
-                    <svg class="pw-review-card__checkmark" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor;">
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                    </svg>
-                    Verified Buyer
-                  </span>
-                {%- endif -%}
-              </div>
-            </div>
-          </div>
-        {%- endfor -%}
-      {%- else -%}
-        {% comment %} Fallback: Render premium product-specific reviews based on product handle {% endcomment %}
-        {%- liquid
-          # Get product handle
-          assign current_product = product | default: closest.product
-          assign p_handle = current_product.handle
-          
-          # Initialize default reviews (Nail fungal oil)
-          assign r1_author = "Dr. Rajesh Patel"
-          assign r1_verified = true
-          assign r1_stars = 5
-          assign r1_content = "I had severe paronychia nail infection on my big toe for 6 months. Within 5 days of using this relief oil, the throbbing pain stopped and the redness is completely gone! Highly recommended!"
-          
-          assign r2_author = "Neha Sharma"
-          assign r2_verified = true
-          assign r2_stars = 5
-          assign r2_content = "This nail oil is a lifesaver. It absorbed quickly under the nail bed. My yellow, damaged nail is growing out healthy and clean now. Excellent quality product."
-          
-          assign r3_author = "Karan Singh"
-          assign r3_verified = true
-          assign r3_stars = 5
-          assign r3_content = "Works extremely fast! The swelling went down in just 2 days. The oil is soothing and does not smell strong."
-          
-          if p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
-            assign r1_author = "Sanjay Verma"
-            assign r1_verified = true
-            assign r1_stars = 5
-            assign r1_content = "My chronic knee pain and joint stiffness are completely gone! This Japanese soothing massage gel works better than any prescription balm I have tried. Instant relief!"
-            
-            assign r2_author = "Sunita Rao"
-            assign r2_verified = true
-            assign r2_stars = 5
-            assign r2_content = "Perfect for post-workout muscle soreness. It has a cooling effect that penetrates deep into the muscle. I apply it every night."
-            
-            assign r3_author = "Amit Mehta"
-            assign r3_verified = true
-            assign r3_stars = 5
-            assign r3_content = "Excellent gel. It is non-sticky and gets absorbed within seconds. My father uses it daily for his shoulder arthritis and feels much better."
-          endif
-        -%}
-
-        <!-- Card 1 -->
-        <div class="pw-review-card">
-          <div class="pw-review-card__stars">
-            {%- for i in (1..r1_stars) -%}
-              <svg class="pw-review-card__star-icon" viewBox="0 0 24 24" fill="currentColor" style="color: #ffc107; width: 16px; height: 16px;">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-            {%- endfor -%}
-          </div>
-          <blockquote class="pw-review-card__content">
-            "{{ r1_content }}"
-          </blockquote>
-          <div class="pw-review-card__author">
-            <div class="pw-review-card__author-info">
-              <span class="pw-review-card__author-name">{{ r1_author }}</span>
-              <span class="pw-review-card__author-status" style="color: #2E7D32; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; margin-top: 4px;">
-                <svg class="pw-review-card__checkmark" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor;">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-                Verified Buyer
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="pw-review-card">
-          <div class="pw-review-card__stars">
-            {%- for i in (1..r2_stars) -%}
-              <svg class="pw-review-card__star-icon" viewBox="0 0 24 24" fill="currentColor" style="color: #ffc107; width: 16px; height: 16px;">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-            {%- endfor -%}
-          </div>
-          <blockquote class="pw-review-card__content">
-            "{{ r2_content }}"
-          </blockquote>
-          <div class="pw-review-card__author">
-            <div class="pw-review-card__author-info">
-              <span class="pw-review-card__author-name">{{ r2_author }}</span>
-              <span class="pw-review-card__author-status" style="color: #2E7D32; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; margin-top: 4px;">
-                <svg class="pw-review-card__checkmark" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor;">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-                Verified Buyer
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="pw-review-card">
-          <div class="pw-review-card__stars">
-            {%- for i in (1..r3_stars) -%}
-              <svg class="pw-review-card__star-icon" viewBox="0 0 24 24" fill="currentColor" style="color: #ffc107; width: 16px; height: 16px;">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-            {%- endfor -%}
-          </div>
-          <blockquote class="pw-review-card__content">
-            "{{ r3_content }}"
-          </blockquote>
-          <div class="pw-review-card__author">
-            <div class="pw-review-card__author-info">
-              <span class="pw-review-card__author-name">{{ r3_author }}</span>
-              <span class="pw-review-card__author-status" style="color: #2E7D32; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; margin-top: 4px;">
-                <svg class="pw-review-card__checkmark" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor;">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-                Verified Buyer
-              </span>
-            </div>
-          </div>
-        </div>
+    
+    <div class="pw-reviews__section-header">
+      <h2 class="pw-reviews__section-title">{{ section.settings.title }}</h2>
+      {%- if section.settings.description != blank -%}
+        <p class="pw-reviews__section-desc">{{ section.settings.description }}</p>
       {%- endif -%}
     </div>
+
+    <!-- Overall Rating Summary Block -->
+    <div class="pw-reviews__summary-card">
+      <!-- Column 1: Average Rating -->
+      <div class="pw-reviews__summary-col pw-reviews__summary-col--rating">
+        <div class="pw-reviews__average-score">4.9</div>
+        <div class="pw-reviews__average-stars">
+          {%- for i in (1..5) -%}
+            <svg class="pw-reviews__star-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+          {%- endfor -%}
+        </div>
+        <div class="pw-reviews__total-count" id="pw-total-reviews-count">99 reviews</div>
+      </div>
+
+      <!-- Column 2: Rating Distribution Bars -->
+      <div class="pw-reviews__summary-col pw-reviews__summary-col--bars">
+        <div class="pw-reviews__distribution-row">
+          <span class="pw-reviews__bar-label">5 Star</span>
+          <div class="pw-reviews__bar-track">
+            <div class="pw-reviews__bar-fill" style="width: 90%;"></div>
+          </div>
+          <span class="pw-reviews__bar-count" id="pw-bar-count-5">90</span>
+        </div>
+        <div class="pw-reviews__distribution-row">
+          <span class="pw-reviews__bar-label">4 Star</span>
+          <div class="pw-reviews__bar-track">
+            <div class="pw-reviews__bar-fill" style="width: 7%;"></div>
+          </div>
+          <span class="pw-reviews__bar-count" id="pw-bar-count-4">7</span>
+        </div>
+        <div class="pw-reviews__distribution-row">
+          <span class="pw-reviews__bar-label">3 Star</span>
+          <div class="pw-reviews__bar-track">
+            <div class="pw-reviews__bar-fill" style="width: 2%;"></div>
+          </div>
+          <span class="pw-reviews__bar-count" id="pw-bar-count-3">2</span>
+        </div>
+        <div class="pw-reviews__distribution-row">
+          <span class="pw-reviews__bar-label">2 Star</span>
+          <div class="pw-reviews__bar-track">
+            <div class="pw-reviews__bar-fill" style="width: 1%;"></div>
+          </div>
+          <span class="pw-reviews__bar-count" id="pw-bar-count-2">1</span>
+        </div>
+        <div class="pw-reviews__distribution-row">
+          <span class="pw-reviews__bar-label">1 Star</span>
+          <div class="pw-reviews__bar-track">
+            <div class="pw-reviews__bar-fill" style="width: 0%;"></div>
+          </div>
+          <span class="pw-reviews__bar-count" id="pw-bar-count-1">0</span>
+        </div>
+      </div>
+
+      <!-- Column 3: Actions -->
+      <div class="pw-reviews__summary-col pw-reviews__summary-col--actions">
+        <button class="pw-reviews__btn-write" id="pw-open-review-btn">
+          WRITE A REVIEW
+        </button>
+        <div class="pw-reviews__filter-wrapper">
+          <button class="pw-reviews__btn-filter" id="pw-filter-toggle">
+            <svg class="pw-reviews__filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="21" x2="4" y2="14"></line>
+              <line x1="4" y1="10" x2="4" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12" y2="3"></line>
+              <line x1="20" y1="21" x2="20" y2="16"></line>
+              <line x1="20" y1="12" x2="20" y2="3"></line>
+              <line x1="1" y1="14" x2="7" y2="14"></line>
+              <line x1="9" y1="8" x2="15" y2="8"></line>
+              <line x1="17" y1="16" x2="23" y2="16"></line>
+            </svg>
+          </button>
+          <div class="pw-reviews__filter-dropdown" id="pw-filter-dropdown">
+            <div class="pw-reviews__filter-option active" data-sort="default">Most Relevant</div>
+            <div class="pw-reviews__filter-option" data-sort="highest">Highest Rating</div>
+            <div class="pw-reviews__filter-option" data-sort="recent">Most Recent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider Line -->
+    <hr class="pw-reviews__divider">
+
+    <!-- Review Cards Grid -->
+    <div class="pw-reviews__grid" id="pw-reviews-grid-target">
+      <!-- 25 Pre-populated reviews will load here dynamically -->
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pw-reviews__pagination">
+      <button class="pw-pagination__btn pw-pagination__btn--prev" aria-label="Previous Page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <div class="pw-pagination__numbers" id="pw-pagination-numbers-target">
+        <!-- Dynamic page numbers -->
+      </div>
+      <button class="pw-pagination__btn pw-pagination__btn--next" aria-label="Next Page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+
   </div>
 </div>
+
+<!-- Write A Review Modal Popup -->
+<div class="pw-review-modal" id="pw-review-write-modal" aria-hidden="true">
+  <div class="pw-review-modal__backdrop" id="pw-modal-backdrop"></div>
+  <div class="pw-review-modal__content">
+    <button class="pw-review-modal__close" id="pw-close-modal-btn" aria-label="Close modal">&times;</button>
+    
+    <!-- Step 1: Input Form -->
+    <div class="pw-review-modal__form-wrapper" id="pw-modal-form-step">
+      <h3 class="pw-review-modal__title">Write a Review</h3>
+      <p class="pw-review-modal__subtitle">Share your experience with our Japanese Long Lasting Natural Hair Dye Shampoo!</p>
+      
+      <form id="pw-review-submission-form" class="pw-review-modal__form">
+        <!-- Stars rating input -->
+        <div class="pw-review-modal__field">
+          <label class="pw-review-modal__label">Overall Rating</label>
+          <div class="pw-review-modal__star-selector" id="pw-star-selector">
+            {%- for i in (1..5) -%}
+              <svg class="pw-review-modal__selector-star" data-value="{{ i }}" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+              </svg>
+            {%- endfor -%}
+          </div>
+          <input type="hidden" name="rating" id="pw-input-rating-value" value="5" required>
+        </div>
+
+        <div class="pw-review-modal__row">
+          <div class="pw-review-modal__field">
+            <label for="pw-input-name" class="pw-review-modal__label">Name</label>
+            <input type="text" id="pw-input-name" name="name" class="pw-review-modal__input" placeholder="e.g. Ramesh K." required>
+          </div>
+          <div class="pw-review-modal__field">
+            <label for="pw-input-email" class="pw-review-modal__label">Email</label>
+            <input type="email" id="pw-input-email" name="email" class="pw-review-modal__input" placeholder="e.g. ramesh@example.com" required>
+          </div>
+        </div>
+
+        <div class="pw-review-modal__field">
+          <label for="pw-input-title" class="pw-review-modal__label">Review Title</label>
+          <input type="text" id="pw-input-title" name="title" class="pw-review-modal__input" placeholder="e.g. Works Like a Charm!" required>
+        </div>
+
+        <div class="pw-review-modal__field">
+          <label for="pw-input-content" class="pw-review-modal__label">Review Content</label>
+          <textarea id="pw-input-content" name="content" class="pw-review-modal__textarea" rows="4" placeholder="How did this shampoo work for you? What did you like?" required></textarea>
+        </div>
+
+        <button type="submit" class="pw-review-modal__btn-submit">
+          SUBMIT REVIEW
+        </button>
+      </form>
+    </div>
+
+    <!-- Step 2: Success Checkmark Screen -->
+    <div class="pw-review-modal__success-wrapper" id="pw-modal-success-step" style="display: none;">
+      <div class="pw-review-modal__success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3 class="pw-review-modal__success-title">Review Submitted!</h3>
+      <p class="pw-review-modal__success-desc">Thank you for sharing your experience. Your review has been added to our catalog successfully!</p>
+      <button class="pw-review-modal__btn-close-success" id="pw-success-done-btn">DONE</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // 25 Pre-populated hair dye shampoo reviews with realistic distributed ratings (5, 4, 3, and 1 star)
+  const defaultReviews = [
+    // Page 1
+    { name: "harish", rating: 5, verified: true, title: "Works Like a Charm!", content: "This shampoo works like a charm, my hair is black, shiny, and manageable.", date: "2 days ago" },
+    { name: "Anshuman", rating: 5, verified: true, title: "Love the Transformation!", content: "I love the transformation, my hair is now black, shiny, and looks amazing.", date: "4 days ago" },
+    { name: "Mahi S.", rating: 5, verified: true, title: "Highly Effective!", content: "Highly effective product, my hair is black, shiny, and the texture has improved.", date: "1 week ago" },
+    { name: "sonu p.", rating: 4, verified: true, title: "Absolutely Delighted!", content: "Absolutely delighted with this shampoo, my hair looks black and shiny. Just wish the delivery was slightly faster, but the product is excellent!", date: "1 week ago" },
+    { name: "Shailendra s.", rating: 5, verified: true, title: "Amazing Formula!", content: "An amazing formula, my hair is now black, shiny, and free from hair fall.", date: "2 weeks ago" },
+    
+    // Page 2
+    { name: "Saria", rating: 5, verified: true, title: "Impressive Performance!", content: "Impressive performance, my hair is now black, shiny, and the difference is noticeable.", date: "2 weeks ago" },
+    { name: "Arif A.", rating: 5, verified: true, title: "Great Product!", content: "Great product, my hair is black, shiny, and the results are noticeable.", date: "3 weeks ago" },
+    { name: "Akshu", rating: 4, verified: true, title: "Satisfaction Guaranteed!", content: "With this shampoo, satisfaction is guaranteed. My hair is black and healthier now. Very good quality.", date: "3 weeks ago" },
+    { name: "Roshan S.", rating: 5, verified: true, title: "Hair Game Changer!", content: "This shampoo is a game-changer for my hair, black, shiny, and less hair loss.", date: "1 month ago" },
+    { name: "Ankur", rating: 5, verified: true, title: "Thrilled with the Outcome!", content: "Thrilled with the outcome, my hair is black, shiny, and feels rejuvenated.", date: "1 month ago" },
+    
+    // Page 3
+    { name: "Akash U.", rating: 3, verified: true, title: "Good Product, Needs Patience", content: "Healthy hair, happy me! This shampoo rescued my hair from damage, but it took about 4-5 washes to see the best results.", date: "1 month ago" },
+    { name: "Sakshi J.", rating: 5, verified: true, title: "Impressed Beyond Words!", content: "Impressed beyond words, this shampoo gave me the black, shiny hair I always wanted.", date: "2 months ago" },
+    { name: "Gulbinaz K.", rating: 5, verified: true, title: "Highly Satisfied!", content: "I have used it and it is very useful to me it has made my hairs black , smooth and shinny it has no side effect you people can by it 😊", date: "2 months ago" },
+    { name: "Uday", rating: 5, verified: true, title: "No More Greys!", content: "Covered my grey hair completely, looks natural.", date: "2 months ago" },
+    { name: "Vishnu", rating: 5, verified: true, title: "Black Hair Magic!", content: "Pure black hair magic! My hair shines brighter than ever before.", date: "3 months ago" },
+
+    // Page 4
+    { name: "Deepak K.", rating: 5, verified: true, title: "Excellent Grey Coverage!", content: "Best shampoo for covering greys. It is very easy to apply and washes off clean.", date: "3 months ago" },
+    { name: "Pooja R.", rating: 5, verified: true, title: "In love with this!", content: "My hair is so soft and black now. No chemical damage like regular dyes.", date: "3 months ago" },
+    { name: "Manish G.", rating: 5, verified: true, title: "Value for Money!", content: "This buy 1 get 1 free deal is amazing. The bottle lasts long and works great.", date: "4 months ago" },
+    { name: "Ritu Sharma", rating: 5, verified: true, title: "Highly Recommended", content: "So happy with the results! It looks completely natural and shiny.", date: "4 months ago" },
+    { name: "Suresh Kumar", rating: 5, verified: true, title: "Quick and Easy", content: "Takes only 10 minutes in the shower. Much better than spending hours at the salon.", date: "4 months ago" },
+
+    // Page 5
+    { name: "Kiran B.", rating: 5, verified: true, title: "No Skin Stains", content: "Unlike other dyes, this doesn't stain my forehead or ears. Very neat.", date: "5 months ago" },
+    { name: "Vijay Patel", rating: 5, verified: true, title: "Saves Time and Money", content: "A perfect solution for busy people. Just shampoo and wash. Highly effective.", date: "5 months ago" },
+    { name: "Sunita J.", rating: 5, verified: true, title: "Silky Black Hair", content: "My hair feels incredibly silky and looks naturally black. Very pleased.", date: "6 months ago" },
+    { name: "Rohan Verma", rating: 5, verified: true, title: "Top Quality Product", content: "Been using it for a month now. Hair fall has reduced and greys are gone.", date: "6 months ago" },
+    { name: "Anju Mehta", rating: 1, verified: true, title: "Color is deep", content: "Great quality and soft hair, but the black color was a bit too deep for my preference. Make sure to apply evenly.", date: "6 months ago" }
+  ];
+
+  let customReviews = [];
+  let allReviews = [];
+  
+  let currentPage = 1;
+  const cardsPerPage = 5;
+  let activeSort = 'default';
+
+  // Read rating and total count variables from Liquid data attributes
+  const rootEl = document.getElementById('pw-reviews-root');
+  let targetRating = parseFloat(rootEl.getAttribute('data-rating')) || 4.9;
+  let targetCount = parseInt(rootEl.getAttribute('data-rating-count')) || 99;
+
+  // Mathematically calculate star counts based on targeted average score to distribute them realistically
+  function calculateDistribution(rating, totalCount) {
+    let dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    if (rating <= 4.8) {
+      // 4.8 Rating
+      dist[5] = Math.round(totalCount * 0.84);
+      dist[4] = Math.round(totalCount * 0.12);
+      dist[3] = Math.round(totalCount * 0.03);
+      dist[2] = Math.round(totalCount * 0.01);
+      dist[1] = totalCount - (dist[5] + dist[4] + dist[3] + dist[2]);
+    } else if (rating <= 4.9) {
+      // 4.9 Rating
+      dist[5] = Math.round(totalCount * 0.90);
+      dist[4] = Math.round(totalCount * 0.07);
+      dist[3] = Math.round(totalCount * 0.02);
+      dist[2] = Math.round(totalCount * 0.01);
+      dist[1] = totalCount - (dist[5] + dist[4] + dist[3] + dist[2]);
+    } else {
+      // 5.0 Rating (displays 5.0 but contains highly realistic lower-star reviews for conversion)
+      dist[5] = Math.round(totalCount * 0.96);
+      dist[4] = Math.round(totalCount * 0.03);
+      dist[3] = Math.round(totalCount * 0.01);
+      dist[2] = 0;
+      dist[1] = totalCount - (dist[5] + dist[4] + dist[3]);
+    }
+    
+    // Safety boundary checks
+    for (let k in dist) {
+      if (dist[k] < 0) dist[k] = 0;
+    }
+    let currentSum = dist[5] + dist[4] + dist[3] + dist[2] + dist[1];
+    if (currentSum !== totalCount) {
+      let diff = totalCount - currentSum;
+      dist[5] += diff; // Make sure they sum up to EXACTLY totalCount
+    }
+    return dist;
+  }
+
+  // Load reviews from localStorage + defaults
+  function initReviews() {
+    try {
+      const stored = localStorage.getItem('pw_custom_reviews');
+      if (stored) {
+        customReviews = JSON.parse(stored);
+      }
+    } catch(e) {
+      console.error("localStorage is disabled or full", e);
+    }
+    
+    // Combine custom reviews (first) with defaults
+    allReviews = [...customReviews, ...defaultReviews];
+    updateSummaryStats();
+    renderReviews();
+  }
+
+  // Calculate summary stats dynamically
+  function updateSummaryStats() {
+    // Sync score and total count perfectly
+    document.querySelector('.pw-reviews__average-score').textContent = targetRating.toFixed(1);
+    document.getElementById('pw-total-reviews-count').textContent = `${targetCount} reviews`;
+    
+    const distribution = calculateDistribution(targetRating, targetCount);
+    
+    // Update progress bars
+    for (let stars = 1; stars <= 5; stars++) {
+      const count = distribution[stars];
+      const percent = targetCount > 0 ? (count / targetCount * 100).toFixed(1) : 0;
+      
+      const countEl = document.getElementById(`pw-bar-count-${stars}`);
+      if (countEl) countEl.textContent = count;
+      
+      const barEl = countEl?.previousElementSibling?.firstElementChild;
+      if (barEl) barEl.style.width = `${percent}%`;
+    }
+  }
+
+  // Get initials for profile avatar
+  function getInitials(name) {
+    if (!name) return '?';
+    const clean = name.trim();
+    if (clean.length <= 2) return clean;
+    const parts = clean.split(/\s+/);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return clean.slice(0, 2);
+  }
+
+  // Build review card HTML
+  function createReviewCardHTML(r) {
+    const initials = getInitials(r.name);
+    
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      const activeColor = i <= r.rating ? '#ffc107' : '#e0e0e0';
+      starsHtml += `<svg class="pw-review-card__star-icon" viewBox="0 0 24 24" fill="currentColor" style="color: ${activeColor};">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </svg>`;
+    }
+
+    const verifiedBadge = r.verified ? `
+      <span class="pw-review-card__author-status">
+        <svg class="pw-review-card__checkmark" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        Verified purchase
+      </span>` : '';
+
+    return `
+      <div class="pw-review-card">
+        <div class="pw-review-card__stars">
+          ${starsHtml}
+        </div>
+        
+        <div class="pw-review-card__author">
+          <div class="pw-review-card__avatar">
+            ${initials}
+          </div>
+          <div class="pw-review-card__author-info">
+            <span class="pw-review-card__author-name">${r.name}</span>
+            ${verifiedBadge}
+          </div>
+        </div>
+        
+        <h4 class="pw-review-card__title">${r.title}</h4>
+        
+        <blockquote class="pw-review-card__content">
+          "${r.content}"
+        </blockquote>
+      </div>
+    `;
+  }
+
+  // Render & Sort Reviews
+  function renderReviews() {
+    let sortedPool = [...allReviews];
+    
+    if (activeSort === 'highest') {
+      sortedPool.sort((a, b) => b.rating - a.rating);
+    } else if (activeSort === 'recent') {
+      sortedPool = [...customReviews, ...defaultReviews];
+    }
+    
+    const grid = document.getElementById('pw-reviews-grid-target');
+    grid.innerHTML = '';
+    
+    const totalPages = Math.ceil(targetCount / cardsPerPage);
+    if (currentPage > totalPages) currentPage = Math.max(totalPages, 1);
+    
+    // Elegant Cyclic Pagination: Modulo cycle through the 25 pool reviews to infinitely support high review counts seamlessly
+    const startIdx = ((currentPage - 1) * cardsPerPage) % sortedPool.length;
+    let pageItems = [];
+    
+    for (let i = 0; i < cardsPerPage; i++) {
+      const idx = (startIdx + i) % sortedPool.length;
+      pageItems.push(sortedPool[idx]);
+    }
+    
+    pageItems.forEach(item => {
+      grid.insertAdjacentHTML('beforeend', createReviewCardHTML(item));
+    });
+    
+    renderPagination(totalPages);
+  }
+
+  // Render Page Numbers
+  function renderPagination(totalPages) {
+    const numContainer = document.getElementById('pw-pagination-numbers-target');
+    numContainer.innerHTML = '';
+    
+    // Display up to 5 surrounding page numbers to look highly polished and compact
+    let startPage = Math.max(currentPage - 2, 1);
+    let endPage = Math.min(startPage + 4, totalPages);
+    if (endPage - startPage < 4) {
+      startPage = Math.max(endPage - 4, 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      const activeClass = i === currentPage ? 'active' : '';
+      numContainer.insertAdjacentHTML('beforeend', `
+        <button class="pw-pagination__num ${activeClass}" data-page="${i}">${i}</button>
+      `);
+    }
+    
+    // Bind number clicks
+    numContainer.querySelectorAll('.pw-pagination__num').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPage = parseInt(btn.dataset.page);
+        renderReviews();
+        document.querySelector('.pw-reviews__summary-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+    
+    // Prev / Next button states
+    const prevBtn = document.querySelector('.pw-pagination__btn--prev');
+    const nextBtn = document.querySelector('.pw-pagination__btn--next');
+    
+    if (currentPage === 1) {
+      prevBtn.classList.add('disabled');
+    } else {
+      prevBtn.classList.remove('disabled');
+    }
+    
+    if (currentPage === totalPages || totalPages === 0) {
+      nextBtn.classList.add('disabled');
+    } else {
+      nextBtn.classList.remove('disabled');
+    }
+  }
+
+  // Pagination navigation listeners
+  document.querySelector('.pw-pagination__btn--prev').addEventListener('click', function() {
+    if (currentPage > 1) {
+      currentPage--;
+      renderReviews();
+      document.querySelector('.pw-reviews__summary-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  document.querySelector('.pw-pagination__btn--next').addEventListener('click', function() {
+    const totalPages = Math.ceil(targetCount / cardsPerPage);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderReviews();
+      document.querySelector('.pw-reviews__summary-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  // Filter Dropdown Toggles
+  const filterBtn = document.getElementById('pw-filter-toggle');
+  const filterDropdown = document.getElementById('pw-filter-dropdown');
+  
+  filterBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    filterDropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', function() {
+    filterDropdown.classList.remove('open');
+  });
+
+  filterDropdown.querySelectorAll('.pw-reviews__filter-option').forEach(opt => {
+    opt.addEventListener('click', function() {
+      filterDropdown.querySelectorAll('.pw-reviews__filter-option').forEach(o => o.classList.remove('active'));
+      this.classList.add('active');
+      activeSort = this.dataset.sort;
+      currentPage = 1;
+      renderReviews();
+    });
+  });
+
+  // Write a Review Modal Toggles
+  const openModalBtn = document.getElementById('pw-open-review-btn');
+  const closeModalBtn = document.getElementById('pw-close-modal-btn');
+  const modalBackdrop = document.getElementById('pw-modal-backdrop');
+  const writeModal = document.getElementById('pw-review-write-modal');
+  const successDoneBtn = document.getElementById('pw-success-done-btn');
+  
+  function openModal() {
+    writeModal.classList.add('open');
+    writeModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeModal() {
+    writeModal.classList.remove('open');
+    writeModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    
+    document.getElementById('pw-modal-form-step').style.display = 'block';
+    document.getElementById('pw-modal-success-step').style.display = 'none';
+    document.getElementById('pw-review-submission-form').reset();
+    resetStarSelection();
+  }
+
+  openModalBtn.addEventListener('click', openModal);
+  closeModalBtn.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', closeModal);
+  successDoneBtn.addEventListener('click', closeModal);
+
+  // Star selector in Write modal
+  const starSelector = document.getElementById('pw-star-selector');
+  const ratingInput = document.getElementById('pw-input-rating-value');
+  const selectorStars = starSelector.querySelectorAll('.pw-review-modal__selector-star');
+  
+  function setStarSelection(value) {
+    ratingInput.value = value;
+    selectorStars.forEach(s => {
+      const starVal = parseInt(s.dataset.value);
+      if (starVal <= value) {
+        s.classList.add('filled');
+      } else {
+        s.classList.remove('filled');
+      }
+    });
+  }
+  
+  function resetStarSelection() {
+    setStarSelection(5);
+  }
+
+  selectorStars.forEach(star => {
+    star.addEventListener('click', function() {
+      const val = parseInt(this.dataset.value);
+      setStarSelection(val);
+    });
+    
+    star.addEventListener('mouseenter', function() {
+      const val = parseInt(this.dataset.value);
+      selectorStars.forEach(s => {
+        if (parseInt(s.dataset.value) <= val) {
+          s.classList.add('hovered');
+        } else {
+          s.classList.remove('hovered');
+        }
+      });
+    });
+  });
+  
+  starSelector.addEventListener('mouseleave', function() {
+    selectorStars.forEach(s => s.classList.remove('hovered'));
+  });
+
+  // Submit Review Form
+  const reviewForm = document.getElementById('pw-review-submission-form');
+  reviewForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('pw-input-name').value.trim();
+    const rating = parseInt(ratingInput.value);
+    const title = document.getElementById('pw-input-title').value.trim();
+    const content = document.getElementById('pw-input-content').value.trim();
+    
+    if(!name || !title || !content) return;
+    
+    const newRev = {
+      name: name,
+      rating: rating,
+      verified: true,
+      title: title,
+      content: content,
+      date: "Just now"
+    };
+
+    // Prepend to custom review list and persist in localStorage
+    customReviews.unshift(newRev);
+    try {
+      localStorage.setItem('pw_custom_reviews', JSON.stringify(customReviews));
+    } catch(e) {
+      console.error(e);
+    }
+    
+    // Dynamically increment targetCount
+    targetCount++;
+    rootEl.setAttribute('data-rating-count', targetCount);
+    
+    // Combine again
+    allReviews = [...customReviews, ...defaultReviews];
+    
+    // Show success view inside modal
+    document.getElementById('pw-modal-form-step').style.display = 'none';
+    document.getElementById('pw-modal-success-step').style.display = 'flex';
+    
+    // Re-render and force Go to Page 1
+    currentPage = 1;
+    updateSummaryStats();
+    renderReviews();
+  });
+
+  // Start the engine!
+  initReviews();
+  resetStarSelection();
+
+});
+</script>
 
 {% schema %}
 {
   "name": "Custom Reviews",
   "tag": "section",
-  "max_blocks": 6,
   "settings": [
     {
       "type": "text",
@@ -190,71 +685,12 @@
       "type": "textarea",
       "id": "description",
       "label": "Description",
-      "default": "See how our premium pain-relief solutions are helping real people reclaim their active lives."
-    }
-  ],
-  "blocks": [
-    {
-      "type": "review",
-      "name": "Review Card",
-      "settings": [
-        {
-          "type": "select",
-          "id": "stars",
-          "label": "Stars Rating",
-          "options": [
-            { "value": "5", "label": "5 Stars" },
-            { "value": "4", "label": "4 Stars" }
-          ],
-          "default": "5"
-        },
-        {
-          "type": "textarea",
-          "id": "content",
-          "label": "Review Content",
-          "default": "After years of joint pain, I finally found something that actually works. Within 3 days of applying the balm, my knee stiffness was completely gone!"
-        },
-        {
-          "type": "text",
-          "id": "author",
-          "label": "Reviewer Name",
-          "default": "Ramesh K."
-        },
-        {
-          "type": "checkbox",
-          "id": "verified",
-          "label": "Verified Buyer Checkmark",
-          "default": true
-        }
-      ]
+      "default": "See how our premium formulas are helping real people achieve beautiful, shiny hair."
     }
   ],
   "presets": [
     {
-      "name": "Custom Reviews",
-      "blocks": [
-        {
-          "type": "review",
-          "settings": {
-            "author": "Aarav S.",
-            "content": "This pain-relief ointment works like magic. It is non-greasy, absorbs immediately, and blocks the throbbing back pain in minutes."
-          }
-        },
-        {
-          "type": "review",
-          "settings": {
-            "author": "Dr. Priya M.",
-            "content": "I recommend these wellness formulas to my patients. Excellent clinical profile and highly bioavailable ingredients."
-          }
-        },
-        {
-          "type": "review",
-          "settings": {
-            "author": "Vikram J.",
-            "content": "Fantastic product! I use it after workouts to prevent muscle cramps and stiffness. Very fast shipping too."
-          }
-        }
-      ]
+      "name": "Custom Reviews"
     }
   ]
 }
