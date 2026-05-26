@@ -59,7 +59,7 @@
         assign days_diff = 0
       endif
       
-      # Assign custom starting counts and daily rates based on product handle
+      # Assign custom starting counts and daily rates based on product handle and attributes
       assign p_handle = product.handle | downcase
       assign base_count = 86
       assign daily_rate = 2
@@ -74,11 +74,23 @@
         assign base_count = 138
         assign daily_rate = 2
       elsif p_handle contains "foot-pads" or p_handle contains "detox" or p_handle contains "patch"
-        assign base_count = 149
-        assign daily_rate = 3
+        # Differentiate the two Foot Pads products: one with 139 reviews today, one with 155 reviews today
+        if p_handle contains "-1" or p_handle contains "free-1" or product.compare_at_price_max < 90000
+          assign base_count = 133
+          assign daily_rate = 3
+        else
+          assign base_count = 149
+          assign daily_rate = 3
+        endif
       elsif p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
-        assign base_count = 98
-        assign daily_rate = 2
+        # Differentiate the two Soothing Massage Gel products: one with 124 reviews today, one with 102 reviews today
+        if p_handle contains "pack-of-2" or p_handle contains "pack-2" or p_handle contains "-2" or p_handle contains "double"
+          assign base_count = 120
+          assign daily_rate = 2
+        else
+          assign base_count = 98
+          assign daily_rate = 2
+        endif
       else
         # Fallback for newly uploaded products
         assign base_count = product_seed | modulo: 41 | plus: 75

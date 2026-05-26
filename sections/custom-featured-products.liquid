@@ -14,7 +14,13 @@
     <div class="pw-product-grid" style="--grid-cols-desktop: {{ section.settings.columns }};">
       {%- assign selected_collection = collections[section.settings.collection] -%}
       {%- if selected_collection != blank and selected_collection.products_count > 0 -%}
-        {%- for product in selected_collection.products limit: section.settings.max_products -%}
+        {%- assign display_products = selected_collection.products -%}
+      {%- else -%}
+        {%- assign display_products = collections.all.products -%}
+      {%- endif -%}
+
+      {%- if display_products != blank and display_products.size > 0 -%}
+        {%- for product in display_products limit: section.settings.max_products -%}
           {%- render 'custom-product-card', product: product -%}
         {%- endfor -%}
       {%- else -%}

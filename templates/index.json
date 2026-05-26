@@ -40,8 +40,8 @@
         "title": "Best Selling Pain Relief Formulas",
         "description": "Explore our targeted solutions clinically formulated to bring fast-acting, lasting relief from pain and stiffness.",
         "collection": "all",
-        "max_products": 5,
-        "columns": 5
+        "max_products": 8,
+        "columns": 4
       }
     },
     "custom_why_choose_us": {

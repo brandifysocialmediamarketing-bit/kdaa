@@ -25,7 +25,7 @@
     
     assign scale_max = 5
     
-    # Assign custom starting counts and daily rates based on product handle
+    # Assign custom starting counts and daily rates based on product handle and attributes
     assign p_handle = product.handle | downcase
     assign base_count = 86
     assign daily_rate = 2
@@ -40,11 +40,23 @@
       assign base_count = 138
       assign daily_rate = 2
     elsif p_handle contains "foot-pads" or p_handle contains "detox" or p_handle contains "patch"
-      assign base_count = 149
-      assign daily_rate = 3
+      # Differentiate the two Foot Pads products: one with 139 reviews today, one with 155 reviews today
+      if p_handle contains "-1" or p_handle contains "free-1" or product.compare_at_price_max < 90000
+        assign base_count = 133
+        assign daily_rate = 3
+      else
+        assign base_count = 149
+        assign daily_rate = 3
+      endif
     elsif p_handle contains "massage" or p_handle contains "soothing" or p_handle contains "gel" or p_handle contains "mitsui" or p_handle contains "joint" or p_handle contains "muscle"
-      assign base_count = 98
-      assign daily_rate = 2
+      # Differentiate the two Soothing Massage Gel products: one with 124 reviews today, one with 102 reviews today
+      if p_handle contains "pack-of-2" or p_handle contains "pack-2" or p_handle contains "-2" or p_handle contains "double"
+        assign base_count = 120
+        assign daily_rate = 2
+      else
+        assign base_count = 98
+        assign daily_rate = 2
+      endif
     else
       # Fallback for newly uploaded products
       assign base_count = product_seed | modulo: 41 | plus: 75
@@ -183,7 +195,7 @@
     <!-- Step 1: Input Form -->
     <div class="pw-review-modal__form-wrapper" id="pw-modal-form-step">
       <h3 class="pw-review-modal__title">Write a Review</h3>
-      <p class="pw-review-modal__subtitle">Share your experience with our Japanese Long Lasting Natural Hair Dye Shampoo!</p>
+      <p class="pw-review-modal__subtitle">Share your experience with our {{ product.title }}!</p>
       
       <form id="pw-review-submission-form" class="pw-review-modal__form">
         <!-- Stars rating input -->
@@ -245,7 +257,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   
   // 25 Pre-populated hair dye shampoo reviews with realistic distributed ratings (5, 4, 3, and 1 star)
-  const defaultReviews = [
+  const hairDyeReviews = [
     // Page 1
     { name: "harish", rating: 5, verified: true, title: "Works Like a Charm!", content: "This shampoo works like a charm, my hair is black, shiny, and manageable.", date: "2 days ago" },
     { name: "Anshuman", rating: 5, verified: true, title: "Love the Transformation!", content: "I love the transformation, my hair is now black, shiny, and looks amazing.", date: "4 days ago" },
@@ -281,6 +293,92 @@ document.addEventListener('DOMContentLoaded', function() {
     { name: "Rohan Verma", rating: 5, verified: true, title: "Top Quality Product", content: "Been using it for a month now. Hair fall has reduced and greys are gone.", date: "6 months ago" },
     { name: "Anju Mehta", rating: 1, verified: true, title: "Color is deep", content: "Great quality and soft hair, but the black color was a bit too deep for my preference. Make sure to apply evenly.", date: "6 months ago" }
   ];
+
+  // 25 Pre-populated reviews for Herbal Detox Foot Pads
+  const detoxFootPadsReviews = [
+    // Page 1
+    { name: "Reema K.", rating: 5, verified: true, title: "Slept Like a Baby!", content: "I was extremely skeptical but these pads are magic. My feet feel so relaxed and I had the deepest sleep in years. Woke up feeling super energized!", date: "2 days ago" },
+    { name: "Amit Sharma", rating: 5, verified: true, title: "Highly Recommended for Swelling", content: "My feet usually swell up after a long day of standing at my clinic. Applying these overnight reduced the swelling completely. Excellent results!", date: "4 days ago" },
+    { name: "Neha Patel", rating: 5, verified: true, title: "Amazing Toxin Cleanser", content: "The pads turn really black and gooey in the morning, which shows how much impurities are pulled out. My body feels lighter and so refreshed.", date: "1 week ago" },
+    { name: "Rajesh S.", rating: 4, verified: true, title: "Very Relaxing & Warming", content: "You can feel a very gentle, soothing warmth when you put them on. Helps immensely in relaxing tight foot muscles. Will buy another pack soon.", date: "1 week ago" },
+    { name: "Suman V.", rating: 5, verified: true, title: "Best Sleep Solution", content: "Highly effective for insomnia. I put them on 30 mins before sleeping, and it naturally calms my nervous system. Excellent quality patches.", date: "2 weeks ago" },
+    
+    // Page 2
+    { name: "Vikram Jeet", rating: 5, verified: true, title: "Worthy Product!", content: "Absolutely brilliant concept. It's clean, easy to stick, and does not peel off during sleep. Waking up feels much easier now, less morning grogginess.", date: "2 weeks ago" },
+    { name: "Pooja Malhotra", rating: 5, verified: true, title: "Felt the Difference in 3 Days", content: "My joint soreness in the ankles is almost gone after using these foot pads for three consecutive nights. Will keep ordering!", date: "3 weeks ago" },
+    { name: "Kunal R.", rating: 4, verified: true, title: "Great Quality & Natural", content: "Love the herbal scent (bamboo vinegar and ginger). They stick firmly and leave your feet feeling incredibly clean and relaxed in the morning.", date: "3 weeks ago" },
+    { name: "Suresh Gupta", rating: 5, verified: true, title: "Excellent Relief", content: "Works perfectly for sole pain and fatigue. Highly recommended for senior citizens who complain about burning feet at night.", date: "1 month ago" },
+    { name: "Aparna S.", rating: 5, verified: true, title: "Highly Impressed", content: "Total game-changer! My heavy feet feeling has totally vanished. I wake up active and fresh every single day. Value for money deal.", date: "1 month ago" },
+    
+    // Page 3
+    { name: "Meera Nair", rating: 3, verified: true, title: "Slightly Messy but Works Wonders", content: "It took me a night to get used to applying them correctly, and washing the sticky residue in the morning is a bit tedious, but the sleep quality makes it 100% worth it.", date: "1 month ago" },
+    { name: "Karan Johar", rating: 5, verified: true, title: "Natural Detoxification", content: "I love that it uses all-natural organic ingredients. Feel highly energetic and healthy. Must try for anyone dealing with high stress.", date: "2 months ago" },
+    { name: "Dr. Vinay", rating: 5, verified: true, title: "Superb Foot Relaxation", content: "Great herbal formulation. Improves local blood circulation and relieves pain. Safe and highly effective for daily use.", date: "2 months ago" },
+    { name: "Sneha G.", rating: 5, verified: true, title: "No More Foot Pain", content: "I had throbbing pain in my heels. These patches pulled out the tension overnight. My heels feel normal now. Absolutely in love with this product.", date: "2 months ago" },
+    { name: "Rahul Verma", rating: 5, verified: true, title: "Deep Sound Sleep", content: "I haven't slept this soundly in months. This is way better than taking pills. 100% natural and safe.", date: "3 months ago" },
+
+    // Page 4
+    { name: "Aditi Roy", rating: 5, verified: true, title: "Excellent Value Pack", content: "The Buy 1 Get 1 Free deal is incredibly generous. The adhesive sheets are high quality and hold up perfectly all night.", date: "3 months ago" },
+    { name: "Jaspreet S.", rating: 5, verified: true, title: "Must Have for Stress", content: "Helps clear my mind and relax my body after long stressful corporate shifts. Waking up is peaceful now.", date: "3 months ago" },
+    { name: "Gita Patel", rating: 5, verified: true, title: "Truly Works", content: "Very happy with the purchase. The black color gets lighter after 5 days of usage, showing it really detoxes.", date: "4 months ago" },
+    { name: "Rohan M.", rating: 5, verified: true, title: "Amazing Product!", content: "Highly effective detox pads. My digestion and energy levels have also improved. Highly recommend.", date: "4 months ago" },
+    { name: "Divya Shah", rating: 5, verified: true, title: "Very Premium Quality", content: "The patch material is premium and doesn't leak. My morning foot soreness is completely resolved.", date: "4 months ago" },
+
+    // Page 5
+    { name: "Anil K.", rating: 5, verified: true, title: "Refreshed and Rejuvenated", content: "It's like getting a foot spa treatment at home while sleeping. Super relaxing and highly effective.", date: "5 months ago" },
+    { name: "Kavita Bisht", rating: 5, verified: true, title: "Best Foot Patches", content: "I have tried other brands but this is by far the most adhesive and effective detox patch.", date: "5 months ago" },
+    { name: "Vivek T.", rating: 5, verified: true, title: "Highly Satisfied", content: "Keeps my feet light and clean. My sleep cycle is fully restored. Thank you so much!", date: "6 months ago" },
+    { name: "Preeti Singh", rating: 5, verified: true, title: "Magical Results", content: "Outstanding quality. Solved my foot fatigue and swelling in just 2 days. Highly recommended.", date: "6 months ago" },
+    { name: "Sanjay", rating: 1, verified: true, title: "Adhesive is too strong", content: "The detox benefits are absolutely wonderful and my swelling was cured, but the adhesive is a bit tough to peel off in the morning. Make sure to peel slowly.", date: "6 months ago" }
+  ];
+
+  // 25 Pre-populated reviews for Mitsui Seiyaku Soothing Massage Gel
+  const massageGelReviews = [
+    // Page 1
+    { name: "Sanjay Dutta", rating: 5, verified: true, title: "Instant Relief from Knee Pain!", content: "My mother has chronic arthritis knee pain. I massaged this gel on her knee and within 10 minutes, the throbbing went away! This Japanese formula is outstanding.", date: "2 days ago" },
+    { name: "Ananya Iyer", rating: 5, verified: true, title: "Best Gel for Muscle Stiffness", content: "As a professional dancer, muscle cramps and back stiffness are common. This gel absorbs instantly without any sticky residue and gives a perfect heating-cooling effect.", date: "4 days ago" },
+    { name: "Ramesh Kumar", rating: 5, verified: true, title: "Exceptional Japanese Quality!", content: "This massage gel works much faster than any normal ointment. It penetrates deep into the joints and relieves the ache. Remarkable product!", date: "1 week ago" },
+    { name: "Dr. Alok", rating: 4, verified: true, title: "Highly Effective Joint Relief", content: "Formulated beautifully. The local cooling effect helps soothe inflammation, and the subsequent warmth relaxes deep tissues. Excellent for cervical and lumbar discomfort.", date: "1 week ago" },
+    { name: "Sunita Sharma", rating: 5, verified: true, title: "Magical Formula for Back Pain", content: "I had severe lower back stiffness from sitting long hours at work. Applied this gel and woke up completely free of pain. Highly recommended!", date: "2 weeks ago" },
+    
+    // Page 2
+    { name: "Gaurav Sen", rating: 5, verified: true, title: "Fast-acting and Non-greasy", content: "I love that it absorbs completely and does not stain clothes. Smells like authentic premium Japanese herbs, very relaxing and pleasant scent.", date: "2 weeks ago" },
+    { name: "Preeti V.", rating: 5, verified: true, title: "No More Painkillers!", content: "This gel has allowed my father to reduce his daily dosage of oral painkillers. It acts locally and provides durable comfort for several hours.", date: "3 weeks ago" },
+    { name: "Jaswant Singh", rating: 4, verified: true, title: "Great Relief for Shoulder Stiffness", content: "Had frozen shoulder issues. Daily massage with this soothing gel has improved my range of motion significantly. Great quality product.", date: "3 weeks ago" },
+    { name: "Kiran Shah", rating: 5, verified: true, title: "Highly Satisfied", content: "Superb formula. The Pack of 2 deal is great value for money. Highly recommend for any home with senior citizens.", date: "1 month ago" },
+    { name: "Vikrant M.", rating: 5, verified: true, title: "Instant Cooling Sensation", content: "Starts working the second you apply it. Feels like ice initially, then turns into deep soothing warmth. Relieves calf and thigh muscle soreness immediately.", date: "1 month ago" },
+    
+    // Page 3
+    { name: "Harpreet Kaur", rating: 3, verified: true, title: "Works Great, Slight Herbal Scent", content: "The pain relief is truly outstanding and fast. Just be aware that it has a mild herbal aroma which lasts for about 10-15 minutes, though it is pleasant.", date: "1 month ago" },
+    { name: "Mohit G.", rating: 5, verified: true, title: "Athletes Must Have", content: "Fantastic post-workout massage gel. Relieves muscle fatigue in a jiffy. Much better than standard drugstore gels.", date: "2 months ago" },
+    { name: "Ritu N.", rating: 5, verified: true, title: "Amazing Joint Solution", content: "Bought this for my grandmother's wrist and finger joint pain. She is finally able to hold her knitting needles comfortably. Bless this gel!", date: "2 months ago" },
+    { name: "Nitin Verma", rating: 5, verified: true, title: "Deep Penetrating Action", content: "Outstanding. You only need a small coin-sized drop, spreads very easily and goes deep to relieve muscle spasms. Top marks.", date: "2 months ago" },
+    { name: "Meena Patel", rating: 5, verified: true, title: "True Fast Acting Relief", content: "Works wonders on sprains and strains. My husband sprained his ankle and this gel brought the swelling and pain down overnight.", date: "3 months ago" },
+
+    // Page 4
+    { name: "Arvinder S.", rating: 5, verified: true, title: "Saves Gym Recovery Time", content: "Outstanding product. I apply it after heavy leg sessions. The recovery is much faster and soreness is minimal next day.", date: "3 months ago" },
+    { name: "Deepak Joshi", rating: 5, verified: true, title: "Premium Pain Reliever", content: "Authentic Mitsui Seiyaku quality. Relieves neck stiffness and headaches from screen strain perfectly.", date: "3 months ago" },
+    { name: "Sujata Roy", rating: 5, verified: true, title: "Highly Recommended", content: "The gel structure is light and pleasant to apply. Brings instant soothing. Best pain relief gel I have ever purchased.", date: "4 months ago" },
+    { name: "Arjun K.", rating: 5, verified: true, title: "Outstanding Results", content: "Great buy! Solved my chronic elbow stiffness. It makes joint movement smooth and pain-free.", date: "4 months ago" },
+    { name: "Vijay R.", rating: 5, verified: true, title: "Very Pleased", content: "Does exactly what it promises. Safe, natural ingredients with clinical power. Essential first-aid addition.", date: "4 months ago" },
+
+    // Page 5
+    { name: "Aanchal G.", rating: 5, verified: true, title: "Best Joint Cream", content: "Really helps with knee inflammation and stiffness. Waking up in the morning is no longer painful.", date: "5 months ago" },
+    { name: "Suresh P.", rating: 5, verified: true, title: "Wonderful Relief", content: "Highly effective. It brings relief that is durable and fast. Fully satisfied with the quality.", date: "5 months ago" },
+    { name: "Kunal Sen", rating: 5, verified: true, title: "Five Stars", content: "Incredibly soothing. It absorbs fast and feels so relaxing. Excellent product and fast delivery.", date: "6 months ago" },
+    { name: "Priya Roy", rating: 5, verified: true, title: "Life Saver", content: "Has made life so much easier for my parents. They can walk in the park without joint distress now.", date: "6 months ago" },
+    { name: "Tarun", rating: 1, verified: true, title: "Heats up quite a bit", content: "The pain relief is absolutely perfect, but the warming effect can feel quite intense if you apply too much at once. Use a tiny amount first!", date: "6 months ago" }
+  ];
+
+  // Dynamically select the correct review set based on the product handle
+  const productHandle = "{{ product.handle | escape }}";
+  let defaultReviews = hairDyeReviews; // Default fallback
+  
+  if (productHandle.indexOf('foot-pads') !== -1 || productHandle.indexOf('detox') !== -1 || productHandle.indexOf('patch') !== -1) {
+    defaultReviews = detoxFootPadsReviews;
+  } else if (productHandle.indexOf('massage') !== -1 || productHandle.indexOf('soothing') !== -1 || productHandle.indexOf('gel') !== -1 || productHandle.indexOf('mitsui') !== -1 || productHandle.indexOf('joint') !== -1 || productHandle.indexOf('muscle') !== -1) {
+    defaultReviews = massageGelReviews;
+  }
 
   let customReviews = [];
   let allReviews = [];
